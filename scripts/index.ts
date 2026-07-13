@@ -11,6 +11,7 @@ import fs from 'node:fs/promises'
 import { servers } from './servers'
 import { getZedMcpConfig } from './zed'
 import { getClaudeMcpConfig } from './claude'
+import { getClaudeCodeMcpConfig } from './claude-code'
 import { getOpenCodeMcpConfig } from './opencode'
 
 async function main() {
@@ -29,6 +30,12 @@ async function main() {
       JSON.stringify(getClaudeMcpConfig(servers), null, 2),
     ),
 
+    // ── Claude Code CLI ──
+    fs.writeFile(
+      './mcp/claude-code.json',
+      JSON.stringify(getClaudeCodeMcpConfig(servers), null, 2),
+    ),
+
     // ── OpenCode ──
     fs.writeFile(
       './mcp/opencode.json',
@@ -39,7 +46,7 @@ async function main() {
   // Log summary
   const stdioCount = servers.filter(s => s.type === 'stdio').length
   const remoteCount = servers.filter(s => s.type === 'remote').length
-  console.log(`✓ Generated MCP configs for Zed, Claude, and OpenCode`)
+  console.log(`✓ Generated MCP configs for Zed, Claude, Claude Code, and OpenCode`)
   console.log(`  ${stdioCount} stdio servers, ${remoteCount} remote servers`)
 }
 

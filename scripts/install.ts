@@ -28,6 +28,7 @@ function getTargets() {
       'Claude Desktop',
       'claude_desktop_config.json',
     ),
+    claudeCode: path.join(home, '.claude.json'),
     opencode: path.join(home, '.config', 'opencode', 'opencode.jsonc'),
   }
 }
@@ -81,6 +82,24 @@ function installClaude() {
   console.log('  → Restart Claude Desktop')
 }
 
+function installClaudeCode() {
+  const { claudeCode: claudeCodePath } = getTargets()
+  const mcpConfig = readJson('./mcp/claude-code.json')
+
+  const current = readJson(claudeCodePath)
+  const projectPath = process.cwd()
+
+  // Ensure the project entry exists
+  if (!current.projects) current.projects = {}
+  if (!current.projects[projectPath]) current.projects[projectPath] = {}
+
+  // Set mcpServers under the current project
+  current.projects[projectPath].mcpServers = mcpConfig.mcpServers
+
+  writeJson(claudeCodePath, current)
+  console.log(`  → Restart Claude Code (or reload with Ctrl+R)`)
+}
+
 function installOpenCode() {
   const { opencode: opencodePath } = getTargets()
   const mcpConfig = readJson('./mcp/opencode.json')
@@ -100,7 +119,7 @@ function installOpenCode() {
 
 function main() {
   const args = process.argv.slice(2)
-  const targets = new Set(args.length > 0 ? args : ['zed', 'claude', 'opencode'])
+  const targets = new Set(args.length > 0 ? args : ['zed', 'claude', 'claudeCode', 'opencode'])
 
   // First ensure configs are built
   if (!fs.existsSync('./mcp/zed.json')) {
@@ -120,6 +139,11 @@ function main() {
   if (targets.has('claude')) {
     console.log('Claude Desktop:')
     installClaude()
+    console.log()
+  }
+  if (targets.has('claudeCode')) {
+    console.log('Claude Code:')
+    installClaudeCode()
     console.log()
   }
   if (targets.has('opencode')) {

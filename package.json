@@ -12,6 +12,7 @@
     "install:all": "tsx scripts/install.ts",
     "install:zed": "tsx scripts/install.ts zed",
     "install:claude": "tsx scripts/install.ts claude",
+    "install:claude-code": "tsx scripts/install.ts claudeCode",
     "install:opencode": "tsx scripts/install.ts opencode"
   },
   "devDependencies": {

@@ -7,7 +7,7 @@ import type { McpServerDefinition } from './servers'
 
 /**
  * Filter servers that are appropriate for a given platform.
- * By default returns all stdio servers (Zed and Claude don't support remote).
+ * Returns all stdio servers (Zed only supports stdio).
  */
 export function getStdioServers(servers: McpServerDefinition[]) {
   return servers.filter(s => s.type === 'stdio')
