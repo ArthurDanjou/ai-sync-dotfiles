@@ -21,7 +21,7 @@ artai/
 │   ├── zed.json
 │   ├── claude.json
 │   ├── claude-code.json
-│   ├── opencode.json
+│   └── opencode.json
 ├── package.json
 └── tsconfig.json
 ```
@@ -39,8 +39,8 @@ This reads `scripts/servers.ts` and writes platform configs into `mcp/`.
 ### Install to system
 
 ```bash
-bun run install:all     # installs to all platforms
-bun run install:zed     # installs only Zed
+bun run install:all          # installs to all platforms
+bun run install:zed          # installs only Zed
 bun run install:claude       # installs only Claude Desktop
 bun run install:claude-code  # installs only Claude Code CLI
 bun run install:opencode     # installs only OpenCode
