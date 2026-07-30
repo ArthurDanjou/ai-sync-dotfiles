@@ -5,6 +5,7 @@
  *   bun run install           # installs to all platforms
  *   bun run install:zed       # installs only Zed
  *   bun run install:claude    # installs only Claude Desktop
+ *   bun run install:claude-code # installs only Claude Code CLI
  *   bun run install:opencode  # installs only OpenCode
  *
  * Inspired by theme-artlab/scripts/install.ts
@@ -29,7 +30,11 @@ function getTargets() {
       'claude_desktop_config.json',
     ),
     claudeCode: path.join(home, '.claude.json'),
+    claudeCodeDir: path.join(home, '.claude'),
     opencode: path.join(home, '.config', 'opencode', 'opencode.jsonc'),
+    opencodeDir: path.join(home, '.config', 'opencode'),
+    lmstudio: path.join(home, '.lmstudio', 'mcp.json'),
+    lmstudioDir: path.join(home, '.lmstudio'),
   }
 }
 
@@ -56,12 +61,20 @@ function writeJson(filePath: string, data: any) {
   console.log(`  ✓ ${filePath}`)
 }
 
-// ── Installers ──────────────────────────────────────────────────
+// ── Installers (MCP configs) ────────────────────────────────────
 
 function installZed() {
   const { zed: zedPath } = getTargets()
   const mcpConfig = readJson('./mcp/zed.json')
-  const current = readJson(zedPath)
+  let current: Record<string, unknown>
+
+  try {
+    const raw = fs.readFileSync(zedPath, 'utf-8')
+    current = JSON.parse(stripTrailingCommas(raw))
+  } catch {
+    // File doesn't exist yet — start fresh
+    current = {}
+  }
 
   // Merge only the context_servers key into the existing settings
   current.context_servers = mcpConfig.context_servers
@@ -115,11 +128,54 @@ function installOpenCode() {
   console.log('  → Restart OpenCode')
 }
 
+function installLmStudio() {
+  const { lmstudio: lmstudioPath, lmstudioDir } = getTargets()
+  const mcpConfig = readJson('./mcp/lmstudio.json')
+  const current = readJson(lmstudioPath)
+
+  current.mcpServers = mcpConfig.mcpServers
+
+  writeJson(lmstudioPath, current)
+  console.log('  → Restart LM Studio')
+}
+
+// ── Installers (platform instructions) ───────────────────────────
+
+function installClaudeInstructions() {
+  const { claudeCodeDir } = getTargets()
+  const src = './scripts/instructions.md'
+  const dst = path.join(claudeCodeDir, 'CLAUDE.md')
+
+  if (!fs.existsSync(src)) {
+    console.log('  ⚠ scripts/instructions.md not found')
+    return
+  }
+
+  fs.mkdirSync(claudeCodeDir, { recursive: true })
+  fs.copyFileSync(src, dst)
+  console.log(`  ✓ ${dst}`)
+}
+
+function installOpenCodeInstructions() {
+  const { opencodeDir } = getTargets()
+  const src = './scripts/instructions.md'
+  const dst = path.join(opencodeDir, 'AGENTS.md')
+
+  if (!fs.existsSync(src)) {
+    console.log('  ⚠ scripts/instructions.md not found')
+    return
+  }
+
+  fs.mkdirSync(opencodeDir, { recursive: true })
+  fs.copyFileSync(src, dst)
+  console.log(`  ✓ ${dst}`)
+}
+
 // ── Main ────────────────────────────────────────────────────────
 
 function main() {
   const args = process.argv.slice(2)
-  const targets = new Set(args.length > 0 ? args : ['zed', 'claude', 'claudeCode', 'opencode'])
+  const targets = new Set(args.length > 0 ? args : ['zed', 'claude', 'claudeCode', 'opencode', 'lmstudio'])
 
   // First ensure configs are built
   if (!fs.existsSync('./mcp/zed.json')) {
@@ -151,6 +207,18 @@ function main() {
     installOpenCode()
     console.log()
   }
+
+  if (targets.has('lmstudio')) {
+    console.log('LM Studio:')
+    installLmStudio()
+    console.log()
+  }
+
+  // ── Platform instructions ─────────────────────────────────────
+  console.log('Platform instructions (~/.claude/CLAUDE.md, ~/.config/opencode/AGENTS.md):')
+  installClaudeInstructions()
+  installOpenCodeInstructions()
+  console.log()
 
   console.log('Done!')
 }

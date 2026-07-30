@@ -13,6 +13,7 @@ import { getZedMcpConfig } from './zed'
 import { getClaudeMcpConfig } from './claude'
 import { getClaudeCodeMcpConfig } from './claude-code'
 import { getOpenCodeMcpConfig } from './opencode'
+import { getLmStudioMcpConfig } from './lmstudio'
 
 async function main() {
   await fs.mkdir('./mcp', { recursive: true })
@@ -41,12 +42,19 @@ async function main() {
       './mcp/opencode.json',
       JSON.stringify(getOpenCodeMcpConfig(servers), null, 2),
     ),
+
+    // ── LM Studio ──
+    fs.writeFile(
+      './mcp/lmstudio.json',
+      JSON.stringify(getLmStudioMcpConfig(servers), null, 2),
+    ),
+
   ])
 
   // Log summary
   const stdioCount = servers.filter(s => s.type === 'stdio').length
   const remoteCount = servers.filter(s => s.type === 'remote').length
-  console.log(`✓ Generated MCP configs for Zed, Claude, Claude Code, and OpenCode`)
+  console.log(`✓ Generated MCP configs for Zed, Claude, Claude Code, OpenCode, and LM Studio`)
   console.log(`  ${stdioCount} stdio servers, ${remoteCount} remote servers`)
 }
 

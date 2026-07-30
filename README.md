@@ -21,7 +21,7 @@ artai/
 │   ├── zed.json
 │   ├── claude.json
 │   ├── claude-code.json
-│   └── opencode.json
+│   ├── opencode.json
 ├── package.json
 └── tsconfig.json
 ```
@@ -34,7 +34,7 @@ artai/
 bun run build
 ```
 
-This reads `scripts/servers.ts` and writes three files into `mcp/`.
+This reads `scripts/servers.ts` and writes platform configs into `mcp/`.
 
 ### Install to system
 
@@ -43,7 +43,8 @@ bun run install:all     # installs to all platforms
 bun run install:zed     # installs only Zed
 bun run install:claude       # installs only Claude Desktop
 bun run install:claude-code  # installs only Claude Code CLI
-bun run install:opencode # installs only OpenCode
+bun run install:opencode     # installs only OpenCode
+bun run install:lmstudio     # installs only LM Studio
 ```
 
 ## Adding a server
@@ -68,14 +69,14 @@ If a variable is unset, the corresponding `env` block is omitted from the genera
 
 ## Platform format differences
 
-| Feature          | Zed                        | Claude Desktop             | Claude Code CLI           | OpenCode                              |
-|------------------|----------------------------|----------------------------|---------------------------|---------------------------------------|
-| Config file      | `~/.config/zed/settings.json` | `claude_desktop_config.json` | `~/.claude.json`        | `~/.config/opencode/opencode.jsonc`    |
-| Config key       | `context_servers`          | `mcpServers`               | `projects[…]mcpServers`   | `mcp`                                 |
-| Remote servers   | ❌ Not supported           | ✅ Supported via `url`     | ✅ Supported (`type: http`) | ✅ Supported                          |
-| Command format   | `{ command, args }`        | `{ command, args }`        | `{ command, args }`       | `{ command: string[] }`               |
-| Env vars         | `env`                      | `env`                      | `env`                     | `environment`                         |
-| Enable/disable   | —                          | —                          | —                         | `enabled`                             |
+| Feature          | Zed                        | Claude Desktop             | Claude Code CLI           | OpenCode                              | LM Studio                             |
+|------------------|----------------------------|----------------------------|---------------------------|---------------------------------------|---------------------------------------|
+| Config file      | `~/.config/zed/settings.json` | `claude_desktop_config.json` | `~/.claude.json`        | `~/.config/opencode/opencode.jsonc`    | `~/.lmstudio/mcp.json`                |
+| Config key       | `context_servers`          | `mcpServers`               | `projects[…]mcpServers`   | `mcp`                                 | `mcpServers`                          |
+| Remote servers   | ❌ Not supported           | ✅ Supported via `url`     | ✅ Supported (`type: http`) | ✅ Supported                          | ✅ Supported via `url`                 |
+| Command format   | `{ command, args }`        | `{ command, args }`        | `{ command, args }`       | `{ command: string[] }`               | `{ command, args }`                   |
+| Env vars         | `env`                      | `env`                      | `env`                     | `environment`                         | `env`                                 |
+| Enable/disable   | —                          | —                          | —                         | `enabled`                             | —                                     |
 
 ## License
 
