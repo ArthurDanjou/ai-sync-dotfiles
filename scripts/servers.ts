@@ -92,14 +92,14 @@ export const servers: McpServerDefinition[] = [
       GITHUB_PERSONAL_ACCESS_TOKEN:
         process.env.GITHUB_PERSONAL_ACCESS_TOKEN ?? '',
     },
-    enabled: false,
+    enabled: true,
   },
   {
     name: 'arxiv',
     type: 'stdio',
     command: 'bunx',
     args: ['-y', '@fre4x/arxiv'],
-    enabled: false,
+    enabled: true,
   },
   {
     name: 'zotero',
@@ -109,7 +109,7 @@ export const servers: McpServerDefinition[] = [
       ZOTERO_LOCAL: 'true',
       ZOTERO_API_KEY: process.env.ZOTERO_API_KEY ?? '',
     },
-    enabled: false,
+    enabled: true,
   },
   {
     name: 'karakeep',
@@ -120,7 +120,7 @@ export const servers: McpServerDefinition[] = [
       KARAKEEP_API_ADDR: process.env.KARAKEEP_API_URL ?? '',
       KARAKEEP_API_KEY: process.env.KARAKEEP_API_KEY ?? '',
     },
-    enabled: false,
+    enabled: true,
   },
 
   // ───── remote (SSE) servers ─────
