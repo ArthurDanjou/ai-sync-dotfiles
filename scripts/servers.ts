@@ -107,6 +107,7 @@ export const servers: McpServerDefinition[] = [
     command: '/Users/arthurdanjou/.local/bin/zotero-mcp',
     env: {
       ZOTERO_LOCAL: 'true',
+      ZOTERO_API_KEY: process.env.ZOTERO_API_KEY ?? '',
     },
     enabled: false,
   },
