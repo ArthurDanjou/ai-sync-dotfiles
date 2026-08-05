@@ -108,6 +108,7 @@ export const servers: McpServerDefinition[] = [
     env: {
       ZOTERO_LOCAL: 'true',
       ZOTERO_API_KEY: process.env.ZOTERO_API_KEY ?? '',
+      ZOTERO_LIBRARY_ID: process.env.ZOTERO_LIBRARY_ID ?? '0',
     },
     enabled: true,
   },
