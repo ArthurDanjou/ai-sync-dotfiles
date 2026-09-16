@@ -5,8 +5,13 @@ node_modules/
 .env.*
 !.env.example
 
-mcp/
-mcp/*
+/mcp/
+/mcp/*
+
+# skills CLI working files (source of truth is skills/)
+.agents/
+.claude/
+skills-lock.json
 
 # Local backups created by install scripts
 *.bak-*
