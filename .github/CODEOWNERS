@@ -1,0 +1,6 @@
+# Solo-maintainer repo: every change needs the owner's eyes.
+# Sensitive areas get an explicit review request, even from automation.
+* @ArthurDanjou
+/scripts/ @ArthurDanjou
+/.github/ @ArthurDanjou
+/hooks/ @ArthurDanjou
