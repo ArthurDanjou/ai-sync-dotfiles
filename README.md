@@ -1,6 +1,6 @@
 # Dotfiles
 
-Mac dotfiles with centralised MCP server configuration, exported to the correct format for **Zed**, **OpenCode**, **Claude Desktop**, **Claude Code CLI**, and **LM Studio**.
+Mac dotfiles with centralised MCP server configuration, exported to the correct format for **Zed**, **OpenCode**, **Claude Desktop**, **Claude Code CLI**, **Codex CLI**, and **LM Studio**.
 
 Inspired by the pattern from [theme-artlab](https://github.com/ArthurDanjou/theme-artlab): one source of truth, multiple platform outputs.
 
@@ -33,7 +33,7 @@ dotfiles/
 │   ├── opencode/agents/
 │   ├── opencode/commands/
 │   ├── claude/settings.json ← Versioned keys only, merged at install, hooks stay
-├── skills/                 ← Source of truth: 32 kept skills, symlinked to ~/.agents/skills + ~/.claude/skills + ~/.config/opencode/skills via `bun run setup`
+├── skills/                 ← Source of truth: 32 kept skills, symlinked to ~/.agents/skills + ~/.claude/skills + ~/.config/opencode/skills + ~/.codex/skills via `bun run setup`
 ├── claude/CLAUDE.md        ← Versioned copy of scripts/instructions.md
 ├── scripts/
 │   ├── servers.ts          ← Source of truth: all MCP servers defined here
@@ -41,6 +41,7 @@ dotfiles/
 │   ├── zed.ts              Formats servers for Zed (stdio only)
 │   ├── claude.ts           Formats servers for Claude Desktop
 │   ├── claude-code.ts      Formats servers for Claude Code CLI
+│   ├── codex.ts            Formats servers for Codex CLI ([mcp_servers.*] tables)
 │   ├── opencode.ts         Formats servers for OpenCode (stdio + remote)
 │   ├── lmstudio.ts         Formats servers for LM Studio
 │   ├── helper.ts           Shared utilities
@@ -93,6 +94,7 @@ bun run install:zed          # installs only Zed
 bun run install:claude       # installs only Claude Desktop
 bun run install:claude-code  # installs only Claude Code CLI
 bun run install:opencode     # installs only OpenCode
+bun run install:codex        # installs only Codex CLI
 bun run install:lmstudio     # installs only LM Studio
 ```
 
@@ -112,7 +114,7 @@ Notes for opencode v2: the global config is `~/.config/opencode/opencode.jsonc` 
 
 ## Adding a skill
 
-Skills live in `skills/` as the single source of truth. `bun run setup` symlinks every skill to `~/.agents/skills`, `~/.claude/skills` and `~/.config/opencode/skills` so Claude Code and OpenCode see the same set everywhere.
+Skills live in `skills/` as the single source of truth. `bun run setup` symlinks every skill to `~/.agents/skills`, `~/.claude/skills`, `~/.config/opencode/skills` and `~/.codex/skills` so Claude Code, OpenCode and Codex see the same set everywhere.
 
 Run skill commands from `~/Workspace/dotfiles` to make the skill universal. The CLI defaults to project scope inside a git repo, which is exactly what keeps the skill versioned here. Use global scope only to trial a skill without versioning it.
 
@@ -139,14 +141,14 @@ If a variable is unset, the corresponding `env` block is omitted from the genera
 
 ## Platform format differences
 
-| Feature          | Zed                        | Claude Desktop             | Claude Code CLI           | OpenCode                              | LM Studio                             |
-|------------------|----------------------------|----------------------------|---------------------------|---------------------------------------|---------------------------------------|
-| Config file      | `~/.config/zed/settings.json` | `~/Library/Application Support/Claude Desktop/claude_desktop_config.json` | `~/.claude.json`        | `~/.config/opencode/opencode.jsonc`    | `~/.lmstudio/mcp.json`                |
-| Config key       | `context_servers`          | `mcpServers`               | `projects[…]mcpServers`   | `mcp`                                 | `mcpServers`                          |
-| Remote servers   | ❌ Not supported           | ✅ Supported via `url`     | ✅ Supported (`type: http`) | ✅ Supported (`type: remote`)           | ✅ Supported via `url`                 |
-| Command format   | `{ command, args }`        | `{ command, args }`        | `{ command, args }`       | `{ type: local, command: string[] }`  | `{ command, args }`                   |
-| Env vars         | `env`                      | `env`                      | `env`                     | `environment`                         | `env`                                 |
-| Enable/disable   | —                          | —                          | —                         | `enabled`                             | —                                     |
+| Feature          | Zed                        | Claude Desktop             | Claude Code CLI           | OpenCode                              | Codex CLI                             | LM Studio                             |
+|------------------|----------------------------|----------------------------|---------------------------|---------------------------------------|---------------------------------------|---------------------------------------|
+| Config file      | `~/.config/zed/settings.json` | `~/Library/Application Support/Claude Desktop/claude_desktop_config.json` | `~/.claude.json`        | `~/.config/opencode/opencode.jsonc`    | `~/.codex/config.toml`                | `~/.lmstudio/mcp.json`                |
+| Config key       | `context_servers`          | `mcpServers`               | `projects[…]mcpServers`   | `mcp`                                 | `mcp_servers`                         | `mcpServers`                          |
+| Remote servers   | ❌ Not supported           | ✅ Supported via `url`     | ✅ Supported (`type: http`) | ✅ Supported (`type: remote`)           | ✅ Supported via `url`                | ✅ Supported via `url`                 |
+| Command format   | `{ command, args }`        | `{ command, args }`        | `{ command, args }`       | `{ type: local, command: string[] }`  | `[mcp_servers.name]` TOML table       | `{ command, args }`                   |
+| Env vars         | `env`                      | `env`                      | `env`                     | `environment`                         | `[mcp_servers.name.env]`              | `env`                                 |
+| Enable/disable   | —                          | —                          | —                         | `enabled`                             | —                                     | —                                     |
 
 ## License
 

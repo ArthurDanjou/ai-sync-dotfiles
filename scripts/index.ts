@@ -12,6 +12,7 @@ import { servers } from './servers'
 import { getZedMcpConfig } from './zed'
 import { getClaudeMcpConfig } from './claude'
 import { getClaudeCodeMcpConfig } from './claude-code'
+import { getCodexMcpConfig } from './codex'
 import { getOpenCodeMcpConfig } from './opencode'
 import { getLmStudioMcpConfig } from './lmstudio'
 
@@ -49,12 +50,18 @@ async function main() {
       JSON.stringify(getLmStudioMcpConfig(servers), null, 2),
     ),
 
+    // ── Codex CLI ──
+    fs.writeFile(
+      './mcp/codex.json',
+      JSON.stringify(getCodexMcpConfig(servers), null, 2),
+    ),
+
   ])
 
   // Log summary
   const stdioCount = servers.filter(s => s.type === 'stdio').length
   const remoteCount = servers.filter(s => s.type === 'remote').length
-  console.log(`✓ Generated MCP configs for Zed, Claude, Claude Code, OpenCode, and LM Studio`)
+  console.log(`✓ Generated MCP configs for Zed, Claude, Claude Code, OpenCode, Codex, and LM Studio`)
   console.log(`  ${stdioCount} stdio servers, ${remoteCount} remote servers`)
 }
 

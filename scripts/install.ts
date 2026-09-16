@@ -342,6 +342,122 @@ function installOpenCode(): boolean {
   return true
 }
 
+// ── Installers (Codex CLI, TOML text merge) ───────────────────────
+// Codex stores MCP servers as [mcp_servers.<name>] tables in the TOML
+// file ~/.codex/config.toml alongside unrelated state (hooks, plugins,
+// desktop). A TOML round trip would reformat the whole file, so managed
+// sections are merged as text: existing managed sections are replaced,
+// everything else is preserved byte for byte.
+
+const CODEX_MANAGED_MARKER = '# Managed by dotfiles (scripts/servers.ts). Managed [mcp_servers.*] entries below are overwritten on install.'
+
+/** Quote a value as a TOML basic string. */
+function tomlString(value: string): string {
+  return JSON.stringify(value)
+}
+
+function renderCodexBlock(name: string, server: any): string {
+  const lines = [`[mcp_servers.${name}]`]
+  if (server && typeof server.url === 'string') {
+    lines.push(`url = ${tomlString(server.url)}`)
+  } else {
+    lines.push(`command = ${tomlString(server.command ?? '')}`)
+    if (Array.isArray(server.args) && server.args.length > 0) {
+      lines.push(`args = [${server.args.map((a: string) => tomlString(a)).join(', ')}]`)
+    }
+    if (server.env && Object.keys(server.env).length > 0) {
+      lines.push('')
+      lines.push(`[mcp_servers.${name}.env]`)
+      for (const [key, value] of Object.entries(server.env)) {
+        lines.push(`${key} = ${tomlString(value as string)}`)
+      }
+    }
+  }
+  return lines.join('\n')
+}
+
+/** Base server name for an [mcp_servers.<name>] header, or null. */
+function codexSectionOwner(header: string, managed: Set<string>): string | null {
+  const prefix = 'mcp_servers.'
+  if (!header.startsWith(prefix)) return null
+  const base = header.slice(prefix.length).split('.')[0]
+  return managed.has(base) ? base : null
+}
+
+function mergeCodexToml(current: string, generated: Record<string, any>): string {
+  const managed = new Set(Object.keys(generated))
+  const kept: string[] = []
+  const lines = current.split('\n')
+  let i = 0
+  const headerRe = /^\s*\[([^\]]+)\]\s*$/
+  while (i < lines.length) {
+    if (lines[i].trim() === CODEX_MANAGED_MARKER) {
+      i += 1
+      continue
+    }
+    const match = lines[i].match(headerRe)
+    if (match && codexSectionOwner(match[1].trim(), managed)) {
+      i += 1
+      while (i < lines.length) {
+        const next = lines[i].match(headerRe)
+        if (!next) {
+          i += 1
+          continue
+        }
+        if (codexSectionOwner(next[1].trim(), managed)) {
+          i += 1
+          continue
+        }
+        break
+      }
+      continue
+    }
+    kept.push(lines[i])
+    i += 1
+  }
+  let text = kept.join('\n').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trimEnd()
+  const blocks = [...managed].map(name => renderCodexBlock(name, generated[name]))
+  if (text.length > 0) text += '\n\n'
+  text += `${CODEX_MANAGED_MARKER}\n\n${blocks.join('\n\n')}\n`
+  return text
+}
+
+function installCodex(): boolean {
+  const mcpRead = readJsonSafe(fromRepo('./mcp/codex.json'))
+  if (mcpRead.missing || mcpRead.corrupt) {
+    console.error('  ✗ ./mcp/codex.json is missing or invalid. Run "bun run build" first.')
+    return false
+  }
+  const codexPath = path.join(home, '.codex', 'config.toml')
+  let current = ''
+  try {
+    current = fs.readFileSync(codexPath, 'utf-8')
+  } catch {
+    // Fresh machine, the managed block becomes the whole file.
+  }
+  const wanted = mergeCodexToml(current, mcpRead.data.mcp_servers ?? {})
+  if (current === wanted) {
+    console.log(`  = ${codexPath} (unchanged)`)
+    return true
+  }
+  fs.mkdirSync(path.dirname(codexPath), { recursive: true })
+  try {
+    if (fs.lstatSync(codexPath).isSymbolicLink()) {
+      fs.unlinkSync(codexPath)
+      console.log(`  ↪ replaced symlink with regular file: ${codexPath}`)
+    } else if (current !== '') {
+      const stamp = new Date().toISOString().replace(/[:.]/g, '-')
+      fs.copyFileSync(codexPath, `${codexPath}.bak-${stamp}`)
+    }
+  } catch {
+    // No existing file, nothing to back up.
+  }
+  fs.writeFileSync(codexPath, wanted)
+  console.log(`  ✓ ${codexPath}`)
+  console.log('  → Restart Codex')
+  return true
+}
+
 function installLmStudio(): boolean {
   const { lmstudio: lmstudioPath } = getTargets()
   const mcpRead = readJsonSafe(fromRepo('./mcp/lmstudio.json'))
@@ -411,7 +527,7 @@ function installOpenCodeInstructions() {
 
 // ── Main ────────────────────────────────────────────────────────
 
-const VALID_TARGETS = ['zed', 'claude', 'claudeCode', 'opencode', 'lmstudio']
+const VALID_TARGETS = ['zed', 'claude', 'claudeCode', 'opencode', 'lmstudio', 'codex']
 
 function main() {
   const args = process.argv.slice(2)
@@ -457,6 +573,12 @@ function main() {
   if (targets.has('lmstudio')) {
     console.log('LM Studio:')
     ok = installLmStudio() && ok
+    console.log()
+  }
+
+  if (targets.has('codex')) {
+    console.log('Codex CLI:')
+    ok = installCodex() && ok
     console.log()
   }
 

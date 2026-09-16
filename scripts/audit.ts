@@ -41,6 +41,7 @@ const MUST_BE_IGNORED = [
   'mcp/claude.json',
   'mcp/claude-code.json',
   'mcp/opencode.json',
+  'mcp/codex.json',
   'mcp/lmstudio.json',
 ]
 
