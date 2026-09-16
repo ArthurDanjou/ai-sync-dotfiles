@@ -30,6 +30,18 @@ export interface McpServerDefinition {
    */
   url?: string
   /**
+   * For remote: HTTP headers baked into configs that support them
+   * (OpenCode, Claude Code). Dropped when every value is empty.
+   * For stdio: not used.
+   */
+  headers?: Record<string, string>
+  /**
+   * For remote: runtime env var holding a bearer token (Codex only,
+   * emitted as `bearer_token_env_var`). The variable must exist in the
+   * process environment when Codex runs. Other platforms ignore it.
+   */
+  bearerTokenEnv?: string
+  /**
    * Environment variables injected when launching the server.
    * Values are fallbacks; set the corresponding env var at runtime to override.
    */
@@ -120,6 +132,50 @@ export const servers: McpServerDefinition[] = [
     env: {
       KARAKEEP_API_ADDR: process.env.KARAKEEP_API_URL ?? '',
       KARAKEEP_API_KEY: process.env.KARAKEEP_API_KEY ?? '',
+    },
+    enabled: true,
+  },
+  {
+    name: 'obsidian',
+    type: 'stdio',
+    command: 'uvx',
+    args: ['mcp-obsidian'],
+    env: {
+      OBSIDIAN_API_KEY: process.env.OBSIDIAN_API_KEY ?? '',
+      OBSIDIAN_HOST: process.env.OBSIDIAN_HOST ?? '',
+      OBSIDIAN_PORT: process.env.OBSIDIAN_PORT ?? '',
+    },
+    enabled: true,
+  },
+  {
+    name: 'proxmox',
+    type: 'stdio',
+    command: 'bunx',
+    args: ['-y', '@bldg-7/proxmox-mcp'],
+    env: {
+      PROXMOX_HOST: process.env.PROXMOX_HOST ?? '',
+      PROXMOX_USER: process.env.PROXMOX_USER ?? '',
+      PROXMOX_TOKEN_NAME: process.env.PROXMOX_TOKEN_NAME ?? '',
+      PROXMOX_TOKEN_VALUE: process.env.PROXMOX_TOKEN_VALUE ?? '',
+      PROXMOX_SSL_MODE: process.env.PROXMOX_SSL_MODE ?? '',
+    },
+    enabled: true,
+  },
+
+  {
+    name: 'music-assistant',
+    type: 'stdio',
+    command: 'uvx',
+    args: [
+      '--from',
+      'git+https://github.com/davidpadbury/music-assistant-mcp',
+      '--with',
+      'mcp[cli]<2',
+      'music-assistant-mcp',
+    ],
+    env: {
+      MUSIC_ASSISTANT_URL: process.env.MUSIC_ASSISTANT_URL ?? '',
+      MUSIC_ASSISTANT_TOKEN: process.env.MUSIC_ASSISTANT_TOKEN ?? '',
     },
     enabled: true,
   },

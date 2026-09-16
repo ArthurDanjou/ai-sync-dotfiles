@@ -3,7 +3,7 @@
  * Mirrors the pattern from theme-artlab/scripts/helper.ts
  */
 
-import type { McpServerDefinition } from './servers'
+import type { McpServerDefinition } from '../servers'
 
 /**
  * Filter servers that are appropriate for a given platform.

@@ -8,7 +8,7 @@
  *   remote:  { "type": "http", "url": "https://..." }
  */
 
-import type { McpServerDefinition } from './servers'
+import type { McpServerDefinition } from '../servers'
 import { filterEnv, splitCommand } from './helper'
 
 // ── Types ──────────────────────────────────────────────────────
@@ -30,6 +30,7 @@ export interface ClaudeCodeMcpStdioServer {
 export interface ClaudeCodeMcpRemoteServer {
   type: 'http'
   url: string
+  headers?: Record<string, string>
 }
 
 // ── Generator ──────────────────────────────────────────────────
@@ -41,10 +42,13 @@ export function getClaudeCodeMcpConfig(
 
   for (const server of servers) {
     if (server.type === 'remote' && server.url) {
-      mcpServers[server.name] = {
+      const entry: ClaudeCodeMcpRemoteServer = {
         type: 'http',
         url: server.url,
       }
+      const headers = filterEnv(server.headers)
+      if (headers) entry.headers = headers
+      mcpServers[server.name] = entry
     } else if (server.type === 'stdio' && server.command) {
       const { command, args } = splitCommand(server)
       const entry: ClaudeCodeMcpStdioServer = { command }

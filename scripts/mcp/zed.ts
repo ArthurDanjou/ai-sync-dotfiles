@@ -11,7 +11,7 @@
  *   }
  */
 
-import type { McpServerDefinition } from './servers'
+import type { McpServerDefinition } from '../servers'
 import { filterEnv, getStdioServers, splitCommand } from './helper'
 
 export interface ZedMcpConfig {

@@ -22,7 +22,7 @@
  *   }
  */
 
-import type { McpServerDefinition } from './servers'
+import type { McpServerDefinition } from '../servers'
 import { filterEnv } from './helper'
 
 export interface OpenCodeMcpConfig {
@@ -57,6 +57,8 @@ export function getOpenCodeMcpConfig(
         url: server.url,
         enabled: server.enabled ?? true,
       }
+      const headers = filterEnv(server.headers)
+      if (headers) (mcp[server.name] as OpenCodeMcpServerRemote).headers = headers
     } else if (server.type === 'stdio' && server.command) {
       const entry: OpenCodeMcpServerLocal = {
         type: 'local',

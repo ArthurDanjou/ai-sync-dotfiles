@@ -16,7 +16,7 @@
  *   }
  */
 
-import type { McpServerDefinition } from './servers'
+import type { McpServerDefinition } from '../servers'
 import { filterEnv, splitCommand } from './helper'
 
 export interface ClaudeMcpConfig {
