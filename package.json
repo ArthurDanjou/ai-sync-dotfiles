@@ -1,20 +1,24 @@
 {
-  "name": "artai-mcp",
-  "displayName": "ArtAI MCP",
+  "name": "dotfiles",
+  "displayName": "Dotfiles",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "packageManager": "bun@1.3.14",
-  "description": "MCP servers config exporter for Zed, OpenCode, and Claude Desktop",
+  "description": "Mac dotfiles with MCP server exporter for Zed, OpenCode, Claude Desktop, Claude Code, and LM Studio",
   "license": "MIT",
   "scripts": {
     "build": "tsx scripts/index.ts",
+    "setup": "tsx scripts/dotfiles.ts",
     "install:all": "tsx scripts/install.ts",
     "install:zed": "tsx scripts/install.ts zed",
     "install:claude": "tsx scripts/install.ts claude",
     "install:claude-code": "tsx scripts/install.ts claudeCode",
     "install:opencode": "tsx scripts/install.ts opencode",
-    "install:lmstudio": "tsx scripts/install.ts lmstudio"
+    "install:lmstudio": "tsx scripts/install.ts lmstudio",
+    "audit": "tsx scripts/audit.ts",
+    "typecheck": "tsc --noEmit",
+    "check": "bun run build && bun run typecheck && bun run audit"
   },
   "devDependencies": {
     "@types/node": "26.1.2",
