@@ -31,13 +31,13 @@ dotfiles/
 │   ├── opencode/tui.json
 │   ├── opencode/AGENTS.md  ← Versioned copy of scripts/instructions.md
 │   ├── opencode/agents/
-│   ├── opencode/commands/
 │   ├── claude/settings.json ← Versioned keys only, merged at install, hooks stay
 ├── skills/                 ← Source of truth: 35 kept skills, symlinked to ~/.agents/skills + ~/.claude/skills + ~/.config/opencode/skills + ~/.codex/skills via `bun run setup`
 ├── claude/CLAUDE.md        ← Versioned copy of scripts/instructions.md
 ├── scripts/
 │   ├── servers.ts          ← Source of truth: all MCP servers defined here (edit me)
 │   ├── instructions.md     ← Source of truth for CLAUDE.md and AGENTS.md instructions (edit me)
+│   ├── commands/           ← Source of truth for commands, symlinked to opencode + claude code + codex (edit me)
 │   ├── mcp/                ← MCP pipeline (build, no manual edits needed)
 │   │   ├── zed.ts          Formats servers for Zed (stdio only)
 │   │   ├── claude.ts       Formats servers for Claude Desktop
@@ -50,7 +50,10 @@ dotfiles/
 │   └── setup/              ← Machine setup (install, no manual edits needed)
 │       ├── install.ts      Merges MCP configs into system paths (non-destructive)
 │       ├── dotfiles.ts     Symlinks home/ and config/ into $HOME
+│       ├── backups.ts      Shared backup scan + 3-day retention, run by setup and install
 │       └── audit.ts        Fails on secrets in tracked files
+├── tests/                  ← bun test suite, isolated (temp HOME, no real config touched)
+├── .github/workflows/test.yml ← CI: build + typecheck + test + audit on every push
 ├── hooks/pre-push          ← Runs audit on every push
 ├── LICENSE                 ← MIT
 ├── mcp/                    ← Generated output (gitignored, contains secrets)
@@ -76,9 +79,14 @@ This runs `brew bundle`, `bun install`, installs the `pre-push` hook, links dotf
 bun run setup          # link home/ and config/ files, backup existing to *.bak-*
 bun run setup --force  # overwrite without backup
 bun run setup --prune  # back up aside home files missing from the repo (never deletes)
-bun run check          # build + typecheck + secret audit
+bun run check          # build + typecheck + tests + secret audit
+bun run test           # isolated test suite (bun test)
 bun run audit          # fail if tracked files contain secrets
+bun run clean          # list every .bak backup file created by setup/install (dry run)
+bun run clean --force  # delete them
 ```
+
+Backups older than 3 days are deleted automatically at the start of every `setup` and `install` run (`scripts/setup/backups.ts`). `bun run clean --force` deletes the remaining recent ones on demand.
 
 ### Build (regenerate platform configs)
 
@@ -102,7 +110,7 @@ bun run install:lmstudio     # installs only LM Studio
 
 Managed servers are merged per-server into the existing config: servers from the repo replace the whole entry (a local tweak inside a managed entry is overwritten), extra local servers are preserved, and servers removed from `scripts/servers.ts` stay in place until deleted by hand. A timestamped `.bak` is written before any change. Symlinked destinations are replaced by regular files so generated secrets never leak back into the repo. Files that fail JSONC parsing are never overwritten. Every install also deploys `scripts/instructions.md` to `~/.claude/CLAUDE.md` and `~/.config/opencode/AGENTS.md`, and merges `config/claude/settings.json` into `~/.claude/settings.json`. Note: `install:claude-code` writes under the `projects` entry of your current directory in `~/.claude.json`, so run it from the repo (or any intended project).
 
-Every push runs `bun run audit` via `hooks/pre-push` (installed by `bootstrap.sh`). It fails on token patterns in tracked files and verifies `.env` and `mcp/` stay ignored.
+Every push runs `bun run audit` via `hooks/pre-push` (installed by `bootstrap.sh`). It fails on token patterns in tracked files and verifies `.env` and `mcp/` stay ignored. CI (`.github/workflows/test.yml`) runs the full `bun run check` pipeline, build plus typecheck plus tests plus audit, on every push and pull request.
 
 Verify with the v2 CLI: `opencode debug config` shows the resolved config and loaded documents, `opencode mcp list` shows server health.
 
@@ -113,6 +121,12 @@ Notes for opencode v2: the global config is `~/.config/opencode/opencode.jsonc` 
 1. Edit `scripts/servers.ts` – add an entry to the `servers` array.
 2. Run `bun run build` – regenerates all platform configs.
 3. Run `bun run install:<platform>` – deploys the change.
+
+## Adding a command
+
+Commands live in `scripts/commands/` as the single source of truth. `bun run setup` symlinks every file to `~/.config/opencode/commands`, `~/.claude/commands` and `~/.codex/prompts` so OpenCode, Claude Code and Codex see the same set everywhere. Only these three platforms support custom commands: Zed, Claude Desktop and LM Studio have no such mechanism.
+
+The shared format works everywhere: YAML frontmatter with a `description` field and `$ARGUMENTS` for the argument placeholder. Codex exposes each prompt as `/prompts:<name>`. Command files that need a specific platform must stay out of the shared directory.
 
 ## Adding a skill
 
@@ -125,7 +139,7 @@ cd ~/Workspace/dotfiles
 bunx skills add <owner/repo> -l                    # preview available skills without installing
 bunx skills add <owner/repo> -s <skill-name> -y    # install one skill into ./skills/
 bun run setup                                      # symlink it to agents, claude and opencode
-bun run check                                      # build plus typecheck plus secret audit
+bun run check                                      # build plus typecheck plus tests plus secret audit
 ```
 
 A skill installed with `-g` lands in `~/.agents/skills` and stays unversioned. It shows up as orphan on the next setup run. To keep it everywhere, copy it into the repo and rerun setup, then commit the new folder. To use a skill in a single project only, run the same add command from that project directory instead of dotfiles. Verify with `bunx skills list` for project skills and `bunx skills list -g` for global skills.

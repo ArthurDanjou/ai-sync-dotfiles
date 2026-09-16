@@ -14,6 +14,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
+import { pathToFileURL } from 'node:url'
+import { purgeOldBackups, RETENTION_DAYS } from './backups'
 
 const repo = process.cwd()
 const home = process.env.HOME || process.env.USERPROFILE || ''
@@ -24,12 +26,12 @@ if (!home) {
 const force = process.argv.includes('--force')
 const prune = process.argv.includes('--prune')
 
-interface Link {
+export interface Link {
   src: string
   dst: string
 }
 
-function links(): Link[] {
+export function links(): Link[] {
   const dst = (p: string) => path.join(home, p)
   const src = (p: string) => path.join(repo, p)
   return [
@@ -60,7 +62,7 @@ function links(): Link[] {
   ]
 }
 
-function backup(dst: string) {
+export function backup(dst: string) {
   // Unlinking a symlink never deletes data, so stale links are
   // removed directly instead of renamed into dangling .bak links.
   if (fs.lstatSync(dst).isSymbolicLink()) {
@@ -74,7 +76,7 @@ function backup(dst: string) {
   console.log(`  backup ${dst} -> ${bak}`)
 }
 
-function linkOne({ src, dst }: Link) {
+export function linkOne({ src, dst }: Link) {
   if (!fs.existsSync(src)) {
     console.log(`  skip missing ${src}`)
     return
@@ -99,7 +101,7 @@ function linkOne({ src, dst }: Link) {
   console.log(`  link ${dst} -> ${src}`)
 }
 
-function linkDirContents(srcDir: string, dstDir: string, ext = '.md') {
+export function linkDirContents(srcDir: string, dstDir: string, ext = '.md') {
   if (!fs.existsSync(srcDir)) return
   const wanted = new Set<string>()
   for (const entry of fs.readdirSync(srcDir)) {
@@ -120,7 +122,7 @@ function linkDirContents(srcDir: string, dstDir: string, ext = '.md') {
   }
 }
 
-function linkSkillDirs(srcDir: string, dstDirs: string[]) {
+export function linkSkillDirs(srcDir: string, dstDirs: string[]) {
   if (!fs.existsSync(srcDir)) return
   const skills = fs.readdirSync(srcDir, { withFileTypes: true })
     .filter(e => e.isDirectory())
@@ -155,7 +157,7 @@ function linkSkillDirs(srcDir: string, dstDirs: string[]) {
   }
 }
 
-function copyIfMissing(src: string, dst: string) {
+export function copyIfMissing(src: string, dst: string) {
   try {
     // lstat succeeds on dangling symlinks, so resolve the target too.
     fs.statSync(dst)
@@ -175,6 +177,10 @@ function copyIfMissing(src: string, dst: string) {
 }
 
 function main() {
+  const purged = purgeOldBackups()
+  if (purged.length > 0) {
+    console.log(`Removed ${purged.length} backup(s) older than ${RETENTION_DAYS} days.`)
+  }
   console.log('Linking dotfiles...\n')
   for (const link of links()) linkOne(link)
   console.log('\nManaged configs (copy template if missing, MCP merged by install)...')
@@ -182,7 +188,10 @@ function main() {
   copyIfMissing(path.join(repo, 'config/opencode/opencode.jsonc'), path.join(home, '.config/opencode/opencode.jsonc'))
   console.log('\nLinking opencode agents and commands...')
   linkDirContents(path.join(repo, 'config/opencode/agents'), path.join(home, '.config/opencode/agents'))
-  linkDirContents(path.join(repo, 'config/opencode/commands'), path.join(home, '.config/opencode/commands'))
+  console.log('\nLinking commands to opencode, claude code and codex...')
+  linkDirContents(path.join(repo, 'scripts/commands'), path.join(home, '.config/opencode/commands'))
+  linkDirContents(path.join(repo, 'scripts/commands'), path.join(home, '.claude', 'commands'))
+  linkDirContents(path.join(repo, 'scripts/commands'), path.join(home, '.codex', 'prompts'))
   console.log('\nLinking skills (universal: agents + claude + opencode)...')
   linkSkillDirs(path.join(repo, 'skills'), [
     path.join(home, '.agents', 'skills'),
@@ -193,4 +202,15 @@ function main() {
   console.log('\nDone. Restart your shell to apply changes.')
 }
 
-main()
+// Import-safe entrypoint, see install.ts.
+function isMain(): boolean {
+  const entry = process.argv[1]
+  if (!entry) return false
+  try {
+    return import.meta.url === pathToFileURL(path.resolve(entry)).href
+  } catch {
+    return false
+  }
+}
+
+if (isMain()) main()
