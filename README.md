@@ -53,7 +53,7 @@ dotfiles/
 │       ├── backups.ts      Shared backup scan + 3-day retention, run by setup and install
 │       └── audit.ts        Fails on secrets in tracked files
 ├── tests/                  ← bun test suite, isolated (temp HOME, no real config touched)
-├── .github/workflows/test.yml ← CI: build + typecheck + test + audit on every push
+├── .github/workflows/checks.yml ← CI: build + typecheck + test + audit on every push
 ├── hooks/pre-push          ← Runs audit on every push
 ├── LICENSE                 ← MIT
 ├── mcp/                    ← Generated output (gitignored, contains secrets)
@@ -110,7 +110,7 @@ bun run install:lmstudio     # installs only LM Studio
 
 Managed servers are merged per-server into the existing config: servers from the repo replace the whole entry (a local tweak inside a managed entry is overwritten), extra local servers are preserved, and servers removed from `scripts/servers.ts` stay in place until deleted by hand. A timestamped `.bak` is written before any change. Symlinked destinations are replaced by regular files so generated secrets never leak back into the repo. Files that fail JSONC parsing are never overwritten. Every install also deploys `scripts/instructions.md` to `~/.claude/CLAUDE.md` and `~/.config/opencode/AGENTS.md`, and merges `config/claude/settings.json` into `~/.claude/settings.json`. Note: `install:claude-code` writes under the `projects` entry of your current directory in `~/.claude.json`, so run it from the repo (or any intended project).
 
-Every push runs `bun run audit` via `hooks/pre-push` (installed by `bootstrap.sh`). It fails on token patterns in tracked files and verifies `.env` and `mcp/` stay ignored. CI (`.github/workflows/test.yml`) runs the full `bun run check` pipeline, build plus typecheck plus tests plus audit, on every push and pull request.
+Every push runs `bun run audit` via `hooks/pre-push` (installed by `bootstrap.sh`). It fails on token patterns in tracked files and verifies `.env` and `mcp/` stay ignored. CI (`.github/workflows/checks.yml`) runs the full `bun run check` pipeline, build plus typecheck plus tests plus audit, on every push and pull request.
 
 Verify with the v2 CLI: `opencode debug config` shows the resolved config and loaded documents, `opencode mcp list` shows server health.
 
