@@ -154,6 +154,7 @@ export const servers: McpServerDefinition[] = [
     args: ['-y', '@bldg-7/proxmox-mcp'],
     env: {
       PROXMOX_HOST: process.env.PROXMOX_HOST ?? '',
+      PROXMOX_PORT: process.env.PROXMOX_PORT ?? '',
       PROXMOX_USER: process.env.PROXMOX_USER ?? '',
       PROXMOX_TOKEN_NAME: process.env.PROXMOX_TOKEN_NAME ?? '',
       PROXMOX_TOKEN_VALUE: process.env.PROXMOX_TOKEN_VALUE ?? '',
