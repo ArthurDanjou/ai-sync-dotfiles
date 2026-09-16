@@ -33,22 +33,24 @@ dotfiles/
 │   ├── opencode/agents/
 │   ├── opencode/commands/
 │   ├── claude/settings.json ← Versioned keys only, merged at install, hooks stay
-├── skills/                 ← Source of truth: 32 kept skills, symlinked to ~/.agents/skills + ~/.claude/skills + ~/.config/opencode/skills + ~/.codex/skills via `bun run setup`
+├── skills/                 ← Source of truth: 35 kept skills, symlinked to ~/.agents/skills + ~/.claude/skills + ~/.config/opencode/skills + ~/.codex/skills via `bun run setup`
 ├── claude/CLAUDE.md        ← Versioned copy of scripts/instructions.md
 ├── scripts/
-│   ├── servers.ts          ← Source of truth: all MCP servers defined here
-│   ├── instructions.md     ← Source of truth for CLAUDE.md and AGENTS.md instructions
-│   ├── zed.ts              Formats servers for Zed (stdio only)
-│   ├── claude.ts           Formats servers for Claude Desktop
-│   ├── claude-code.ts      Formats servers for Claude Code CLI
-│   ├── codex.ts            Formats servers for Codex CLI ([mcp_servers.*] tables)
-│   ├── opencode.ts         Formats servers for OpenCode (stdio + remote)
-│   ├── lmstudio.ts         Formats servers for LM Studio
-│   ├── helper.ts           Shared utilities
-│   ├── index.ts            Build orchestrator
-│   ├── install.ts          Merges MCP configs into system paths (non-destructive)
-│   ├── dotfiles.ts         Symlinks home/ and config/ into $HOME
-│   └── audit.ts            Fails on secrets in tracked files
+│   ├── servers.ts          ← Source of truth: all MCP servers defined here (edit me)
+│   ├── instructions.md     ← Source of truth for CLAUDE.md and AGENTS.md instructions (edit me)
+│   ├── mcp/                ← MCP pipeline (build, no manual edits needed)
+│   │   ├── zed.ts          Formats servers for Zed (stdio only)
+│   │   ├── claude.ts       Formats servers for Claude Desktop
+│   │   ├── claude-code.ts  Formats servers for Claude Code CLI
+│   │   ├── codex.ts        Formats servers for Codex CLI ([mcp_servers.*] tables)
+│   │   ├── opencode.ts     Formats servers for OpenCode (stdio + remote)
+│   │   ├── lmstudio.ts     Formats servers for LM Studio
+│   │   ├── helper.ts       Shared utilities
+│   │   └── index.ts        Build orchestrator
+│   └── setup/              ← Machine setup (install, no manual edits needed)
+│       ├── install.ts      Merges MCP configs into system paths (non-destructive)
+│       ├── dotfiles.ts     Symlinks home/ and config/ into $HOME
+│       └── audit.ts        Fails on secrets in tracked files
 ├── hooks/pre-push          ← Runs audit on every push
 ├── LICENSE                 ← MIT
 ├── mcp/                    ← Generated output (gitignored, contains secrets)
