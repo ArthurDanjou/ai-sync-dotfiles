@@ -1,0 +1,17 @@
+[user]
+	name = Arthur DANJOU
+	email = contact@arthurdanjou.fr
+[init]
+	defaultBranch = main
+[core]
+	excludesfile = ~/.gitignore_global
+	autocrlf = input
+[http]
+	postBuffer = 524288000
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[alias]
+	tree = log --oneline --graph --all --decorate

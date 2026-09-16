@@ -1,0 +1,11 @@
+# Global gitignore applied via core.excludesfile in home/.gitconfig
+.DS_Store
+.env
+.env.*
+!.env.example
+node_modules/
+dist/
+build/
+*.log
+*.pem
+*.key

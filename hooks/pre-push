@@ -1,0 +1,3 @@
+#!/bin/sh
+# Block pushes when tracked files contain secrets. Installed by bootstrap.sh.
+bun run audit

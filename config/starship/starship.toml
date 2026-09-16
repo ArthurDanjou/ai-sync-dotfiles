@@ -1,0 +1,117 @@
+add_newline = true
+command_timeout = 1000
+
+format = """
+$directory\
+$git_branch\
+$git_commit\
+$git_state\
+$git_status\
+$git_metrics\
+$python\
+$bun\
+$rlang\
+$quarto\
+$docker_context\
+$jobs\
+$username\
+$container\
+$sudo\
+$hostname\
+$memory_usage\
+$battery\
+$cmd_duration\
+$line_break\
+$character"""
+
+[character]
+success_symbol = "[➜](bold green)"
+error_symbol = "[✗](bold red)"
+
+[directory]
+truncation_length = 3
+truncate_to_repo = true
+style = "bold blue"
+read_only = " 🔒"
+
+[git_branch]
+symbol = "🌱 "
+style = "bold purple"
+
+[git_status]
+disabled = false
+style = "red"
+
+[git_metrics]
+disabled = false
+added_style = "bold green"
+deleted_style = "bold red"
+format = '[+$added]($added_style)/[-$deleted]($deleted_style) '
+
+[jobs]
+symbol = "⚙️"
+style = "bold yellow"
+
+[python]
+symbol = "🐍 "
+style = "yellow"
+format = '[$symbol$version(\($virtualenv\))]($style) '
+python_binary = ["./.venv/bin/python", "python", "python3"]
+
+[username]
+style_user = "white bold"
+style_root = "black bold red"
+format = "[$user]($style)@"
+show_always = false
+
+[docker_context]
+symbol = "🐋 "
+style = "blue"
+only_with_files = true
+
+[cmd_duration]
+min_time = 2000
+format = "took [$duration]($style) "
+style = "yellow"
+
+[rlang]
+symbol = "📐 "
+style = "blue"
+
+[quarto]
+symbol = "📝 "
+style = "blue"
+
+[bun]
+symbol = "🍞 "
+style = "bold yellow"
+format = "via [$symbol$version]($style) "
+
+[memory_usage]
+disabled = false
+threshold = 75
+symbol = "🧠 "
+style = "bold red"
+format = "[$symbol${ram_pct}]($style) "
+
+[sudo]
+disabled = false
+symbol = "🧙 "
+style = "bold red"
+
+[hostname]
+ssh_only = true
+format = "[$hostname]($style) "
+style = "bold dimmed white"
+
+[container]
+format = '[$symbol \[$name\]]($style) '
+symbol = "📦"
+
+[battery]
+display = [{ threshold = 30, style = "bold red" }]
+charging_symbol = "⚡ "
+discharging_symbol = "🔋 "
+
+[nodejs]
+disabled = true

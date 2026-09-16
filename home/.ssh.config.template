@@ -1,0 +1,7 @@
+# Copy to ~/.ssh/config and adjust. Never commit private keys.
+# Only host aliases belong here, no secrets.
+Host github.com
+  HostName github.com
+  User git
+  AddKeysToAgent yes
+  IdentityFile ~/.ssh/id_ed25519

@@ -1,0 +1,205 @@
+{
+  "project_panel": {
+    "dock": "right",
+  },
+  "outline_panel": {
+    "dock": "right",
+  },
+  "collaboration_panel": {
+    "dock": "right",
+  },
+  "agent": {
+    "dock": "left",
+    "favorite_models": [],
+    "model_parameters": [],
+  },
+  "language_models": {
+    "opencode": {
+      "show_go_models": true,
+    },
+  },
+  "ssh_connections": [
+    {
+      "host": "monitoring",
+      "username": "root",
+      "args": [],
+      "projects": [
+        {
+          "paths": ["/root/monitoring"],
+        },
+      ],
+    },
+    {
+      "host": "docker",
+      "args": [],
+      "projects": [
+        {
+          "paths": ["/root/traefik"],
+        },
+      ],
+    },
+    {
+      "host": "docker",
+      "username": "root",
+      "args": [],
+      "projects": [
+        {
+          "paths": ["/root"],
+        },
+      ],
+    },
+  ],
+  "cli_default_open_behavior": "existing_window",
+  "agent_servers": {
+    "opencode": {
+      "default_config_options": {
+        "effort": "high",
+        "model": "opencode-go/glm-5.3-flash",
+      },
+      "type": "registry",
+    },
+  },
+  "autosave": {
+    "after_delay": {
+      "milliseconds": 200,
+    },
+  },
+  "git_panel": {
+    "dock": "right",
+    "group_by": "status",
+  },
+  "theme": {
+    "mode": "system",
+    "light": "ArtLab Light",
+    "dark": "ArtLab Dark",
+  },
+  "buffer_font_family": "Monaspace Neon",
+  "buffer_line_height": "standard",
+  "buffer_font_size": 11,
+  "format_on_save": "on",
+  "lsp": {
+    "rust-analyzer": {
+      "initialization_options": {
+        "checkOnSave": {
+          "command": "clippy",
+        },
+        "cargo": {
+          "allFeatures": true,
+        },
+        "procMacro": {
+          "enable": true,
+        },
+        "diagnostics": {
+          "experimental": {
+            "enable": true,
+          },
+        },
+      },
+    },
+    "ltex": {
+      "settings": {
+        "ltex": {
+          "language": "auto",
+        },
+      },
+    },
+    "vtsls": {
+      "settings": {
+        "typescript": {
+          "inlayHints": {
+            "parameterNames": {
+              "enabled": "all",
+              "suppressWhenArgumentMatchesName": false,
+            },
+            "parameterTypes": {
+              "enabled": true,
+            },
+            "variableTypes": {
+              "enabled": true,
+              "suppressWhenTypeMatchesName": true,
+            },
+            "propertyDeclarationTypes": {
+              "enabled": true,
+            },
+            "functionLikeReturnTypes": {
+              "enabled": true,
+            },
+            "enumMemberValues": {
+              "enabled": true,
+            },
+          },
+        },
+        "javascript": {
+          "inlayHints": {
+            "parameterNames": {
+              "enabled": "all",
+              "suppressWhenArgumentMatchesName": false,
+            },
+            "parameterTypes": {
+              "enabled": true,
+            },
+            "variableTypes": {
+              "enabled": true,
+              "suppressWhenTypeMatchesName": true,
+            },
+            "propertyDeclarationTypes": {
+              "enabled": true,
+            },
+            "functionLikeReturnTypes": {
+              "enabled": true,
+            },
+            "enumMemberValues": {
+              "enabled": true,
+            },
+          },
+        },
+      },
+    },
+    "basedpyright": {
+      "settings": {
+        "basedpyright.analysis": {
+          "diagnosticMode": "workspace",
+          "inlayHints": {
+            "callArgumentNames": false,
+          },
+        },
+      },
+    },
+    "eslint": {
+      "settings": {
+        "codeActionOnSave": {
+          "rules": ["import/order"],
+        },
+      },
+    },
+    "tailwindcss-language-server": {
+      "settings": {
+        "experimental": {
+          "classRegex": ["class=\"([^\"]*)\""],
+        },
+      },
+    },
+  },
+  "languages": {
+    "JavaScript": {
+      "formatter": ["auto"],
+      "code_actions_on_format": {
+        "source.fixAll.eslint": true,
+      },
+    },
+    "TypeScript": {
+      "formatter": ["auto"],
+      "code_actions_on_format": {
+        "source.fixAll.eslint": true,
+      },
+    },
+    "LaTeX": {
+      "formatter": "prettier",
+      "format_on_save": "on",
+    },
+    "Python": {
+      "language_servers": ["ty", "ruff"],
+    },
+  },
+  "semantic_tokens": "combined"
+}

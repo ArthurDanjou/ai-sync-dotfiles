@@ -1,0 +1,10 @@
+{
+  "extraKnownMarketplaces": {
+    "plannotator": {
+      "source": {
+        "repo": "backnotprop/plannotator",
+        "source": "github"
+      }
+    }
+  }
+}
