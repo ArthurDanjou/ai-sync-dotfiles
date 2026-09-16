@@ -28,7 +28,7 @@ if (!home) {
 }
 
 // Repo root resolved from this file, never from the caller cwd.
-const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
 const fromRepo = (p: string) => path.join(repo, p)
 
 // ── Target paths ────────────────────────────────────────────────
@@ -360,6 +360,9 @@ function renderCodexBlock(name: string, server: any): string {
   const lines = [`[mcp_servers.${name}]`]
   if (server && typeof server.url === 'string') {
     lines.push(`url = ${tomlString(server.url)}`)
+    if (typeof server.bearer_token_env_var === 'string' && server.bearer_token_env_var !== '') {
+      lines.push(`bearer_token_env_var = ${tomlString(server.bearer_token_env_var)}`)
+    }
   } else {
     lines.push(`command = ${tomlString(server.command ?? '')}`)
     if (Array.isArray(server.args) && server.args.length > 0) {

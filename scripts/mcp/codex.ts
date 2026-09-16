@@ -10,7 +10,7 @@
  * as TOML text into the live config.toml at install time.
  */
 
-import type { McpServerDefinition } from './servers'
+import type { McpServerDefinition } from '../servers'
 import { filterEnv, splitCommand } from './helper'
 
 export interface CodexMcpConfig {
@@ -29,6 +29,7 @@ export interface CodexMcpStdioServer {
 
 export interface CodexMcpRemoteServer {
   url: string
+  bearer_token_env_var?: string
 }
 
 export function getCodexMcpConfig(
@@ -38,9 +39,11 @@ export function getCodexMcpConfig(
 
   for (const server of servers) {
     if (server.type === 'remote' && server.url) {
-      mcp_servers[server.name] = {
+      const entry: CodexMcpRemoteServer = {
         url: server.url,
       }
+      if (server.bearerTokenEnv) entry.bearer_token_env_var = server.bearerTokenEnv
+      mcp_servers[server.name] = entry
     } else if (server.type === 'stdio' && server.command) {
       const { command, args } = splitCommand(server)
       const entry: CodexMcpStdioServer = { command }

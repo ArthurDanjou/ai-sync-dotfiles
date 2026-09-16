@@ -8,7 +8,7 @@
 
 import 'dotenv/config'
 import fs from 'node:fs/promises'
-import { servers } from './servers'
+import { servers } from '../servers'
 import { getZedMcpConfig } from './zed'
 import { getClaudeMcpConfig } from './claude'
 import { getClaudeCodeMcpConfig } from './claude-code'
