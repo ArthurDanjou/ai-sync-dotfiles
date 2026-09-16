@@ -12,10 +12,12 @@
  */
 
 import fs from 'node:fs'
+import path from 'node:path'
 import { execFileSync, execSync } from 'node:child_process'
 import process from 'node:process'
+import { pathToFileURL } from 'node:url'
 
-const TOKEN_PATTERNS = [
+export const TOKEN_PATTERNS = [
   /ghp_[A-Za-z0-9]{20,}/,
   /gho_[A-Za-z0-9]{20,}/,
   /github_pat_[A-Za-z0-9_]{20,}/,
@@ -33,7 +35,7 @@ const TOKEN_PATTERNS = [
 ]
 
 // Backstop, not a guarantee. Every generated secret-bearing file must be ignored.
-const MUST_BE_IGNORED = [
+export const MUST_BE_IGNORED = [
   '.env',
   '.env.local',
   'mcp/',
@@ -59,7 +61,7 @@ function isIgnored(filePath: string): boolean {
   }
 }
 
-function scanText(source: string, content: string): boolean {
+export function scanText(source: string, content: string): boolean {
   for (const pattern of TOKEN_PATTERNS) {
     if (pattern.test(content)) {
       console.error(`audit: possible secret (${pattern}) in ${source}`)
@@ -114,4 +116,15 @@ function main() {
   console.log('audit: clean')
 }
 
-main()
+// Import-safe entrypoint, see install.ts.
+function isMain(): boolean {
+  const entry = process.argv[1]
+  if (!entry) return false
+  try {
+    return import.meta.url === pathToFileURL(path.resolve(entry)).href
+  } catch {
+    return false
+  }
+}
+
+if (isMain()) main()

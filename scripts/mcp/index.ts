@@ -8,6 +8,9 @@
 
 import 'dotenv/config'
 import fs from 'node:fs/promises'
+import path from 'node:path'
+import process from 'node:process'
+import { pathToFileURL } from 'node:url'
 import { servers } from '../servers'
 import { getZedMcpConfig } from './zed'
 import { getClaudeMcpConfig } from './claude'
@@ -16,7 +19,7 @@ import { getCodexMcpConfig } from './codex'
 import { getOpenCodeMcpConfig } from './opencode'
 import { getLmStudioMcpConfig } from './lmstudio'
 
-async function main() {
+export async function main() {
   await fs.mkdir('./mcp', { recursive: true })
 
   await Promise.all([
@@ -65,4 +68,15 @@ async function main() {
   console.log(`  ${stdioCount} stdio servers, ${remoteCount} remote servers`)
 }
 
-main().catch(console.error)
+// Import-safe entrypoint, see setup/install.ts.
+function isMain(): boolean {
+  const entry = process.argv[1]
+  if (!entry) return false
+  try {
+    return import.meta.url === pathToFileURL(path.resolve(entry)).href
+  } catch {
+    return false
+  }
+}
+
+if (isMain()) main().catch(console.error)
