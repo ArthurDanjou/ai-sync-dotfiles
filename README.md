@@ -63,7 +63,7 @@ dotfiles/
 ## New Mac
 
 ```bash
-git clone https://github.com/ArthurDanjou/dotfiles.git ~/Workspace/dotfiles
+git clone https://github.com/ArthurDanjou/ai-sync-dotfiles.git ~/Workspace/dotfiles
 cd ~/Workspace/dotfiles
 ./bootstrap.sh
 # Fill in .env on first run, then re-run ./bootstrap.sh
