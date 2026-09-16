@@ -120,6 +120,41 @@ function linkDirContents(srcDir: string, dstDir: string, ext = '.md') {
   }
 }
 
+function linkSkillDirs(srcDir: string, dstDirs: string[]) {
+  if (!fs.existsSync(srcDir)) return
+  const skills = fs.readdirSync(srcDir, { withFileTypes: true })
+    .filter(e => e.isDirectory())
+    .map(e => e.name)
+    .filter(name => fs.existsSync(path.join(srcDir, name, 'SKILL.md')))
+  for (const name of skills) {
+    for (const dstDir of dstDirs) {
+      linkOne({ src: path.join(srcDir, name), dst: path.join(dstDir, name) })
+    }
+  }
+  for (const dstDir of dstDirs) {
+    if (!fs.existsSync(dstDir)) continue
+    for (const entry of fs.readdirSync(dstDir, { withFileTypes: true })) {
+      if (!entry.isDirectory() && !entry.isSymbolicLink()) continue
+      const name = entry.name
+      if (name.startsWith('.')) continue
+      if (name.includes('.bak-')) continue
+      if (!skills.includes(name)) {
+        const dst = path.join(dstDir, name)
+        if (prune) {
+          try {
+            backup(dst)
+            console.log(`  pruned ${dst} (see backup above)`)
+          } catch (err) {
+            console.log(`  skip prune ${dst}: ${err}`)
+          }
+        } else {
+          console.log(`  orphan ${dst} (not in repo, run with --prune to back it up aside)`)
+        }
+      }
+    }
+  }
+}
+
 function copyIfMissing(src: string, dst: string) {
   try {
     // lstat succeeds on dangling symlinks, so resolve the target too.
@@ -148,6 +183,12 @@ function main() {
   console.log('\nLinking opencode agents and commands...')
   linkDirContents(path.join(repo, 'config/opencode/agents'), path.join(home, '.config/opencode/agents'))
   linkDirContents(path.join(repo, 'config/opencode/commands'), path.join(home, '.config/opencode/commands'))
+  console.log('\nLinking skills (universal: agents + claude + opencode)...')
+  linkSkillDirs(path.join(repo, 'skills'), [
+    path.join(home, '.agents', 'skills'),
+    path.join(home, '.claude', 'skills'),
+    path.join(home, '.config', 'opencode', 'skills'),
+  ])
   console.log('\nDone. Restart your shell to apply changes.')
 }
 

@@ -33,6 +33,7 @@ dotfiles/
 │   ├── opencode/agents/
 │   ├── opencode/commands/
 │   ├── claude/settings.json ← Versioned keys only, merged at install, hooks stay
+├── skills/                 ← Source of truth: 32 kept skills, symlinked to ~/.agents/skills + ~/.claude/skills + ~/.config/opencode/skills via `bun run setup`
 ├── claude/CLAUDE.md        ← Versioned copy of scripts/instructions.md
 ├── scripts/
 │   ├── servers.ts          ← Source of truth: all MCP servers defined here
@@ -108,6 +109,22 @@ Notes for opencode v2: the global config is `~/.config/opencode/opencode.jsonc` 
 1. Edit `scripts/servers.ts` – add an entry to the `servers` array.
 2. Run `bun run build` – regenerates all platform configs.
 3. Run `bun run install:<platform>` – deploys the change.
+
+## Adding a skill
+
+Skills live in `skills/` as the single source of truth. `bun run setup` symlinks every skill to `~/.agents/skills`, `~/.claude/skills` and `~/.config/opencode/skills` so Claude Code and OpenCode see the same set everywhere.
+
+Run skill commands from `~/Workspace/dotfiles` to make the skill universal. The CLI defaults to project scope inside a git repo, which is exactly what keeps the skill versioned here. Use global scope only to trial a skill without versioning it.
+
+```bash
+cd ~/Workspace/dotfiles
+bunx skills add <owner/repo> -l                    # preview available skills without installing
+bunx skills add <owner/repo> -s <skill-name> -y    # install one skill into ./skills/
+bun run setup                                      # symlink it to agents, claude and opencode
+bun run check                                      # build plus typecheck plus secret audit
+```
+
+A skill installed with `-g` lands in `~/.agents/skills` and stays unversioned. It shows up as orphan on the next setup run. To keep it everywhere, copy it into the repo and rerun setup, then commit the new folder. To use a skill in a single project only, run the same add command from that project directory instead of dotfiles. Verify with `bunx skills list` for project skills and `bunx skills list -g` for global skills.
 
 ## Environment variables
 
