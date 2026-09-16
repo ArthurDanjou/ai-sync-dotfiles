@@ -3,6 +3,10 @@ node_modules/
 .DS_Store
 .env
 .env.*
+!.env.example
 
 mcp/
 mcp/*
+
+# Local backups created by install scripts
+*.bak-*
