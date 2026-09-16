@@ -19,7 +19,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
+import { purgeOldBackups, RETENTION_DAYS } from './backups'
 
 const home = process.env.HOME || process.env.USERPROFILE || ''
 if (!home) {
@@ -33,7 +34,7 @@ const fromRepo = (p: string) => path.join(repo, p)
 
 // ── Target paths ────────────────────────────────────────────────
 
-function getTargets() {
+export function getTargets() {
   return {
     zed: path.join(home, '.config', 'zed', 'settings.json'),
     claude: path.join(
@@ -54,7 +55,7 @@ function getTargets() {
 // ── Helpers ─────────────────────────────────────────────────────
 
 /** Strip JSONC comments and trailing commas, respecting string literals. */
-function stripJsonc(text: string): string {
+export function stripJsonc(text: string): string {
   let out = ''
   let i = 0
   let quote = ''
@@ -114,13 +115,13 @@ function stripJsonc(text: string): string {
   return out
 }
 
-interface ReadResult {
+export interface ReadResult {
   data: any
   missing: boolean
   corrupt: boolean
 }
 
-function readJsonSafe(filePath: string): ReadResult {
+export function readJsonSafe(filePath: string): ReadResult {
   let raw: string
   try {
     raw = fs.readFileSync(filePath, 'utf-8')
@@ -135,7 +136,7 @@ function readJsonSafe(filePath: string): ReadResult {
 }
 
 /** Order-insensitive deep equality for parsed JSON values. */
-function deepEqual(a: unknown, b: unknown): boolean {
+export function deepEqual(a: unknown, b: unknown): boolean {
   if (a === b) return true
   if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) return false
   if (Array.isArray(a) !== Array.isArray(b)) return false
@@ -148,7 +149,7 @@ function deepEqual(a: unknown, b: unknown): boolean {
   return [...keys].every(k => deepEqual(ao[k], bo[k]))
 }
 
-function writeJson(filePath: string, data: any) {
+export function writeJson(filePath: string, data: any) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true })
   try {
     const existing = JSON.parse(stripJsonc(fs.readFileSync(filePath, 'utf-8')))
@@ -176,7 +177,7 @@ function writeJson(filePath: string, data: any) {
 }
 
 /** Merge generated servers into existing ones, preserving local extras. */
-function mergeServers(current: any, generated: any): any {
+export function mergeServers(current: any, generated: any): any {
   return { ...(current ?? {}), ...generated }
 }
 
@@ -349,14 +350,14 @@ function installOpenCode(): boolean {
 // sections are merged as text: existing managed sections are replaced,
 // everything else is preserved byte for byte.
 
-const CODEX_MANAGED_MARKER = '# Managed by dotfiles (scripts/servers.ts). Managed [mcp_servers.*] entries below are overwritten on install.'
+export const CODEX_MANAGED_MARKER = '# Managed by dotfiles (scripts/servers.ts). Managed [mcp_servers.*] entries below are overwritten on install.'
 
 /** Quote a value as a TOML basic string. */
-function tomlString(value: string): string {
+export function tomlString(value: string): string {
   return JSON.stringify(value)
 }
 
-function renderCodexBlock(name: string, server: any): string {
+export function renderCodexBlock(name: string, server: any): string {
   const lines = [`[mcp_servers.${name}]`]
   if (server && typeof server.url === 'string') {
     lines.push(`url = ${tomlString(server.url)}`)
@@ -380,14 +381,14 @@ function renderCodexBlock(name: string, server: any): string {
 }
 
 /** Base server name for an [mcp_servers.<name>] header, or null. */
-function codexSectionOwner(header: string, managed: Set<string>): string | null {
+export function codexSectionOwner(header: string, managed: Set<string>): string | null {
   const prefix = 'mcp_servers.'
   if (!header.startsWith(prefix)) return null
   const base = header.slice(prefix.length).split('.')[0]
   return managed.has(base) ? base : null
 }
 
-function mergeCodexToml(current: string, generated: Record<string, any>): string {
+export function mergeCodexToml(current: string, generated: Record<string, any>): string {
   const managed = new Set(Object.keys(generated))
   const kept: string[] = []
   const lines = current.split('\n')
@@ -488,7 +489,7 @@ function installLmStudio(): boolean {
 // Copy a text file only when content differs. Identical destinations
 // (including symlinks into this repo) are left untouched, symlinks are
 // replaced by regular files, regular files are backed up first.
-function installTextFile(src: string, dst: string) {
+export function installTextFile(src: string, dst: string) {
   if (!fs.existsSync(src)) {
     console.log(`  ⚠ ${src} not found`)
     return
@@ -550,6 +551,10 @@ function main() {
   }
 
   console.log('Installing MCP configs...\n')
+  const purged = purgeOldBackups()
+  if (purged.length > 0) {
+    console.log(`Removed ${purged.length} backup(s) older than ${RETENTION_DAYS} days.\n`)
+  }
   let ok = true
 
   if (targets.has('zed')) {
@@ -598,4 +603,17 @@ function main() {
   console.log('Done!')
 }
 
-main()
+// Import-safe entrypoint: importing this module from tests must not
+// install anything. tsx and bun both expose the entry script as
+// process.argv[1], so compare it against this file.
+function isMain(): boolean {
+  const entry = process.argv[1]
+  if (!entry) return false
+  try {
+    return import.meta.url === pathToFileURL(path.resolve(entry)).href
+  } catch {
+    return false
+  }
+}
+
+if (isMain()) main()
