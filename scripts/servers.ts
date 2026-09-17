@@ -159,6 +159,7 @@ export const servers: McpServerDefinition[] = [
       PROXMOX_TOKEN_NAME: process.env.PROXMOX_TOKEN_NAME ?? '',
       PROXMOX_TOKEN_VALUE: process.env.PROXMOX_TOKEN_VALUE ?? '',
       PROXMOX_SSL_MODE: process.env.PROXMOX_SSL_MODE ?? '',
+      PROXMOX_ALLOW_ELEVATED: process.env.PROXMOX_ALLOW_ELEVATED ?? '',
     },
     enabled: true,
   },
