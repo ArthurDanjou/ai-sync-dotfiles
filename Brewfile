@@ -159,6 +159,8 @@ cask "orbstack"
 cask "t3-code"
 # Menu bar manager
 cask "thaw"
+# Customizable email client
+cask "thunderbird"
 # Tiny, fully native launcher, hotkeys, and clipboard history
 cask "abue-ammar/tinycast/tinycast"
 # Native desktop client for WhatsApp
