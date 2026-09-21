@@ -35,6 +35,7 @@ command -v tailscale >/dev/null && eval "$(tailscale completion zsh)"
 command -v fnm >/dev/null && eval "$(fnm env --use-on-cd --shell zsh)"
 
 alias cd="z"
+alias oc="opencode"
 alias lg="lazygit"
 alias lzd="lazydocker"
 alias grep="rg"
