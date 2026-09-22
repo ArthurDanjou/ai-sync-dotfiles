@@ -12,6 +12,7 @@ tap "oven-sh/bun", trusted: true
 tap "peterldowns/tap", trusted: true
 tap "r-lib/rig"
 tap "shobhit99/tap"
+tap "stablyai/orca", trusted: true
 tap "tw93/tap", trusted: true
 # Run your GitHub Actions locally
 brew "act"
@@ -155,8 +156,8 @@ cask "mactex-no-gui"
 cask "obsidian"
 # Replacement for Docker Desktop
 cask "orbstack"
-# Minimal GUI for AI code agents
-cask "t3-code"
+# IDE for orchestrating AI coding agents across terminals and worktrees
+cask "stablyai/orca/orca"
 # Menu bar manager
 cask "thaw"
 # Customizable email client
