@@ -146,6 +146,8 @@ cask "codex"
 cask "discord"
 # Window peeking utility app
 cask "dockdoor"
+# Per-application volume mixer, equalizer, and audio router
+cask "finetune"
 cask "font-jetbrains-mono-nerd-font"
 cask "font-monaspice-nerd-font"
 # Terminal emulator that uses platform-native UI and GPU acceleration
