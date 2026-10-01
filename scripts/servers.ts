@@ -136,18 +136,6 @@ export const servers: McpServerDefinition[] = [
     enabled: true,
   },
   {
-    name: 'obsidian',
-    type: 'stdio',
-    command: 'uvx',
-    args: ['mcp-obsidian'],
-    env: {
-      OBSIDIAN_API_KEY: process.env.OBSIDIAN_API_KEY ?? '',
-      OBSIDIAN_HOST: process.env.OBSIDIAN_HOST ?? '',
-      OBSIDIAN_PORT: process.env.OBSIDIAN_PORT ?? '',
-    },
-    enabled: true,
-  },
-  {
     name: 'proxmox',
     type: 'stdio',
     command: 'bunx',
@@ -165,7 +153,7 @@ export const servers: McpServerDefinition[] = [
   },
 
   {
-    name: 'music-assistant',
+    name: 'artmusic',
     type: 'stdio',
     command: 'uvx',
     args: [
@@ -200,6 +188,30 @@ export const servers: McpServerDefinition[] = [
     name: 'arthome',
     type: 'remote',
     url: process.env.ARTHOME_MCP_URL ?? '',
+    enabled: true,
+  },
+  {
+    name: 'artmedia',
+    type: 'remote',
+    url: process.env.ARTMEDIA_MCP_URL ?? '',
+    headers: {
+      Authorization: process.env.ARTMEDIA_MCP_TOKEN
+        ? `Bearer ${process.env.ARTMEDIA_MCP_TOKEN}`
+        : '',
+    },
+    bearerTokenEnv: 'ARTMEDIA_MCP_TOKEN',
+    enabled: true,
+  },
+  {
+    name: 'artnotes',
+    type: 'remote',
+    url: process.env.AFFINE_MCP_URL ?? '',
+    headers: {
+      Authorization: process.env.AFFINE_MCP_TOKEN
+        ? `Bearer ${process.env.AFFINE_MCP_TOKEN}`
+        : '',
+    },
+    bearerTokenEnv: 'AFFINE_MCP_TOKEN',
     enabled: true,
   },
   {
