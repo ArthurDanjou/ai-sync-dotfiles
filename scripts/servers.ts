@@ -125,17 +125,6 @@ export const servers: McpServerDefinition[] = [
     enabled: true,
   },
   {
-    name: 'karakeep',
-    type: 'stdio',
-    command: 'bunx',
-    args: ['-y', '@karakeep/mcp'],
-    env: {
-      KARAKEEP_API_ADDR: process.env.KARAKEEP_API_URL ?? '',
-      KARAKEEP_API_KEY: process.env.KARAKEEP_API_KEY ?? '',
-    },
-    enabled: true,
-  },
-  {
     name: 'proxmox',
     type: 'stdio',
     command: 'bunx',
@@ -170,6 +159,19 @@ export const servers: McpServerDefinition[] = [
     enabled: true,
   },
 
+  {
+    name: 'artnotes',
+    type: 'stdio',
+    command: 'uvx',
+    args: ['mcp-obsidian'],
+    env: {
+      OBSIDIAN_API_KEY: process.env.OBSIDIAN_API_KEY ?? '',
+      OBSIDIAN_HOST: process.env.OBSIDIAN_HOST ?? '',
+      OBSIDIAN_PORT: process.env.OBSIDIAN_PORT ?? '',
+    },
+    enabled: true,
+  },
+
   // ───── remote (SSE) servers ─────
 
   {
@@ -200,18 +202,6 @@ export const servers: McpServerDefinition[] = [
         : '',
     },
     bearerTokenEnv: 'ARTMEDIA_MCP_TOKEN',
-    enabled: true,
-  },
-  {
-    name: 'artnotes',
-    type: 'remote',
-    url: process.env.AFFINE_MCP_URL ?? '',
-    headers: {
-      Authorization: process.env.AFFINE_MCP_TOKEN
-        ? `Bearer ${process.env.AFFINE_MCP_TOKEN}`
-        : '',
-    },
-    bearerTokenEnv: 'AFFINE_MCP_TOKEN',
     enabled: true,
   },
   {
