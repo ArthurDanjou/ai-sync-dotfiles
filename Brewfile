@@ -12,6 +12,7 @@ tap "oven-sh/bun", trusted: true
 tap "peterldowns/tap", trusted: true
 tap "r-lib/rig"
 tap "shobhit99/tap"
+tap "steipete/tap", trusted: true
 tap "stablyai/orca", trusted: true
 tap "tw93/tap", trusted: true
 # Run your GitHub Actions locally
@@ -142,6 +143,8 @@ cask "claude"
 cask "claude-code@latest"
 # OpenAI's coding agent that runs in your terminal
 cask "codex"
+# Menu bar usage monitor for Codex and Claude
+cask "steipete/tap/codexbar"
 # Voice and text chat software
 cask "discord"
 # Window peeking utility app
