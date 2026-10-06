@@ -152,8 +152,6 @@ cask "orbstack"
 cask "t3-code"
 # Menu bar manager
 cask "thaw"
-# Customizable email client
-cask "thunderbird"
 # Menu bar toolkit with keep-awake, system monitor and volume mixer
 cask "vorssaint"
 # Native desktop client for WhatsApp
