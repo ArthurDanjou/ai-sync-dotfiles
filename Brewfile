@@ -1,17 +1,10 @@
 tap "abue-ammar/tinycast", trusted: true
 tap "anomalyco/tap", trusted: true
 tap "encoredev/tap", trusted: true
-tap "iina/mpv-iina"
-tap "kamillobinski/thock"
 tap "libsql/sqld", trusted: true
 tap "localstack/tap", trusted: true
-tap "muxy-app/tap"
-tap "nickustinov/tap"
-tap "openhue/cli"
 tap "oven-sh/bun", trusted: true
 tap "peterldowns/tap", trusted: true
-tap "r-lib/rig"
-tap "shobhit99/tap"
 tap "steipete/tap", trusted: true
 tap "stablyai/orca", trusted: true
 tap "tw93/tap", trusted: true
@@ -143,14 +136,8 @@ cask "claude"
 cask "claude-code@latest"
 # OpenAI's coding agent that runs in your terminal
 cask "codex"
-# Menu bar usage monitor for Codex and Claude
-cask "steipete/tap/codexbar"
 # Voice and text chat software
 cask "discord"
-# Window peeking utility app
-cask "dockdoor"
-# Per-application volume mixer, equalizer, and audio router
-cask "finetune"
 cask "font-jetbrains-mono-nerd-font"
 cask "font-monaspice-nerd-font"
 # Terminal emulator that uses platform-native UI and GPU acceleration
@@ -161,14 +148,14 @@ cask "mactex-no-gui"
 cask "obsidian"
 # Replacement for Docker Desktop
 cask "orbstack"
-# IDE for orchestrating AI coding agents across terminals and worktrees
-cask "stablyai/orca/orca"
+# Minimal GUI for AI code agents
+cask "t3-code"
 # Menu bar manager
 cask "thaw"
 # Customizable email client
 cask "thunderbird"
-# Tiny, fully native launcher, hotkeys, and clipboard history
-cask "abue-ammar/tinycast/tinycast"
+# Menu bar toolkit with keep-awake, system monitor and volume mixer
+cask "vorssaint"
 # Native desktop client for WhatsApp
 cask "whatsapp"
 cargo "mdbook"
