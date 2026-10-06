@@ -11,3 +11,9 @@ Most skills below are vendored from third-party upstreams installed via
 `skills add`. Each skill remains the work of its authors. Only
 `rust-skills` ships its own LICENSE file. When adding a skill, record
 its source with a one-line note in this file.
+
+- `use-spark`, `spark-recipe-inbox-zero`, `spark-recipe-morning-standup`,
+  `spark-recipe-meeting-prep`, `spark-recipe-meeting-followup`,
+  `spark-recipe-weekly-digest`, `spark-persona-exec-assistant` vendored
+  from `readdle/spark-cli-skills` (MIT, Spark Mail Limited) via the Codex
+  marketplace `readdle/spark-codex-marketplace`.
