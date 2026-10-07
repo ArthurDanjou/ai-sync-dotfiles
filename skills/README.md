@@ -11,3 +11,5 @@ Most skills below are vendored from third-party upstreams installed via
 `skills add`. Each skill remains the work of its authors. Only
 `rust-skills` ships its own LICENSE file. When adding a skill, record
 its source with a one-line note in this file.
+
+Ponytail skills (`ponytail`, `ponytail-review`, `ponytail-audit`, `ponytail-debt`, `ponytail-gain`, `ponytail-help`) are vendored from DietrichGebert/ponytail under MIT.
