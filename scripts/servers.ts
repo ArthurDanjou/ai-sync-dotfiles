@@ -173,6 +173,22 @@ export const servers: McpServerDefinition[] = [
   },
 
   {
+    name: 'artmeal',
+    type: 'stdio',
+    command: 'uvx',
+    args: [
+      '--from',
+      'git+https://github.com/rldiao/mealie-mcp-server',
+      'mealie-mcp-server',
+    ],
+    env: {
+      MEALIE_BASE_URL: process.env.MEALIE_BASE_URL ?? '',
+      MEALIE_API_KEY: process.env.MEALIE_API_KEY ?? '',
+    },
+    enabled: true,
+  },
+
+  {
     name: 'oleafly',
     type: 'stdio',
     command: 'npx',
