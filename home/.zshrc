@@ -79,3 +79,8 @@ export PATH="$PATH:$HOME/.lmstudio/bin"
 
 # bun completions
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/arthurdanjou/.lmstudio/bin"
+# End of LM Studio CLI section
+

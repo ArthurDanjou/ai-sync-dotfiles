@@ -191,13 +191,29 @@ export const servers: McpServerDefinition[] = [
   {
     name: 'oleafly',
     type: 'stdio',
-    command: 'npx',
+    command: 'bunx',
     args: [
       '-y',
       'mcp-remote@latest',
       process.env.OLEAFLY_MCP_URL ?? 'http://127.0.0.1:5323/mcp',
       '--header',
       `Authorization: Bearer ${process.env.OLEAFLY_MCP_TOKEN ?? ''}`,
+      '--transport',
+      'http-only',
+    ],
+    enabled: true,
+  },
+
+  {
+    name: 'homelable',
+    type: 'stdio',
+    command: 'bunx',
+    args: [
+      '-y',
+      'mcp-remote@latest',
+      process.env.HOMELABLE_MCP_URL ?? 'https://homelable.arthurdanjou.fr/mcp/',
+      '--header',
+      `X-API-Key: ${process.env.HOMELABLE_MCP_TOKEN ?? ''}`,
       '--transport',
       'http-only',
     ],
