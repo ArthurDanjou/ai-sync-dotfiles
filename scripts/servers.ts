@@ -204,6 +204,22 @@ export const servers: McpServerDefinition[] = [
     enabled: true,
   },
 
+  {
+    name: 'homelable',
+    type: 'stdio',
+    command: 'bunx',
+    args: [
+      '-y',
+      'mcp-remote@latest',
+      process.env.HOMELABLE_MCP_URL ?? 'https://homelable.arthurdanjou.fr/mcp/',
+      '--header',
+      `X-API-Key: ${process.env.HOMELABLE_MCP_TOKEN ?? ''}`,
+      '--transport',
+      'http-only',
+    ],
+    enabled: true,
+  },
+
   // ───── remote (SSE) servers ─────
 
   {
