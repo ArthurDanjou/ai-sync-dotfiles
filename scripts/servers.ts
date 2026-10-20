@@ -191,7 +191,7 @@ export const servers: McpServerDefinition[] = [
   {
     name: 'oleafly',
     type: 'stdio',
-    command: 'npx',
+    command: 'bunx',
     args: [
       '-y',
       'mcp-remote@latest',
