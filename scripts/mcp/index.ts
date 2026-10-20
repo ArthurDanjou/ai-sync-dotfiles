@@ -19,47 +19,49 @@ import { getCodexMcpConfig } from './codex'
 import { getOpenCodeMcpConfig } from './opencode'
 import { getLmStudioMcpConfig } from './lmstudio'
 
-export async function main() {
+export async function main(
+  profileName = process.env.MCP_PROFILE || 'local',
+  outDir = './mcp',
+) {
   // Install profile: 'local' keeps every server, 'server' drops the
   // ones marked profiles: ['local'] (Mac binaries, Mac-local services).
-  const profile = process.env.MCP_PROFILE || 'local'
-  const active = serversForProfile(servers, profile)
-  await fs.mkdir('./mcp', { recursive: true })
+  const active = serversForProfile(servers, profileName)
+  await fs.mkdir(outDir, { recursive: true })
 
   await Promise.all([
     // ── Zed ──
     fs.writeFile(
-      './mcp/zed.json',
+      path.join(outDir, 'zed.json'),
       JSON.stringify(getZedMcpConfig(active), null, 2),
     ),
 
     // ── Claude Desktop ──
     fs.writeFile(
-      './mcp/claude.json',
+      path.join(outDir, 'claude.json'),
       JSON.stringify(getClaudeMcpConfig(active), null, 2),
     ),
 
     // ── Claude Code CLI ──
     fs.writeFile(
-      './mcp/claude-code.json',
+      path.join(outDir, 'claude-code.json'),
       JSON.stringify(getClaudeCodeMcpConfig(active), null, 2),
     ),
 
     // ── OpenCode ──
     fs.writeFile(
-      './mcp/opencode.json',
+      path.join(outDir, 'opencode.json'),
       JSON.stringify(getOpenCodeMcpConfig(active), null, 2),
     ),
 
     // ── LM Studio ──
     fs.writeFile(
-      './mcp/lmstudio.json',
+      path.join(outDir, 'lmstudio.json'),
       JSON.stringify(getLmStudioMcpConfig(active), null, 2),
     ),
 
     // ── Codex CLI ──
     fs.writeFile(
-      './mcp/codex.json',
+      path.join(outDir, 'codex.json'),
       JSON.stringify(getCodexMcpConfig(active), null, 2),
     ),
 
@@ -70,7 +72,7 @@ export async function main() {
   const remoteCount = active.filter(s => s.type === 'remote').length
   const excluded = servers.length - active.length
   console.log(`✓ Generated MCP configs for Zed, Claude, Claude Code, OpenCode, Codex, and LM Studio`)
-  console.log(`  profile ${profile}: ${stdioCount} stdio servers, ${remoteCount} remote servers${excluded > 0 ? `, ${excluded} excluded` : ''}`)
+  console.log(`  profile ${profileName}: ${stdioCount} stdio servers, ${remoteCount} remote servers${excluded > 0 ? `, ${excluded} excluded` : ''}`)
 }
 
 // Import-safe entrypoint, see setup/install.ts.
