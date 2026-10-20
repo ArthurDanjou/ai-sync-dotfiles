@@ -69,6 +69,7 @@ export const servers: McpServerDefinition[] = [
     type: 'stdio',
     command: 'bunx',
     args: ['-y', '@modelcontextprotocol/server-filesystem', '~/Workspace'],
+    profiles: ['local'],
     enabled: true,
   },
   {
@@ -137,6 +138,7 @@ export const servers: McpServerDefinition[] = [
     type: 'stdio',
     command: 'bunx',
     args: ['-y', '@bldg-7/proxmox-mcp'],
+    profiles: ['local'],
     env: {
       PROXMOX_HOST: process.env.PROXMOX_HOST ?? '',
       PROXMOX_PORT: process.env.PROXMOX_PORT ?? '',

@@ -50,7 +50,9 @@ describe('servers source of truth', () => {
     const remote = serversForProfile(servers, 'server')
     const remoteNames = new Set(remote.map(s => s.name))
     // Mac binaries and Mac-local services never ship to a server.
-    for (const name of ['zotero', 'oleafly', 'artnotes', 'artmusic']) {
+    // proxmox carries an elevated-capability token, filesystem a Mac
+    // path; both stay off remote machines too.
+    for (const name of ['zotero', 'oleafly', 'artnotes', 'artmusic', 'proxmox', 'filesystem']) {
       expect(remoteNames.has(name), `${name} should be local-only`).toBe(false)
       expect(servers.find(s => s.name === name)?.profiles).toEqual(['local'])
     }
