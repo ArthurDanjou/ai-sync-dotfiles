@@ -72,6 +72,10 @@ export const DEFAULT_REMOTE_TARGETS = ['opencode', 'claudeCode', 'codex']
 export const BUN_INSTALL_CMD =
   'if command -v curl >/dev/null 2>&1; then curl -fsSL https://bun.sh/install | bash; else wget -qO- https://bun.sh/install | bash; fi'
 
+// Non-interactive ssh does not source .bashrc, where the bun installer
+// adds ~/.bun/bin, so the PATH must be set for the check itself.
+export const BUN_CHECK_CMD = 'export PATH="$HOME/.bun/bin:$PATH"; command -v bun'
+
 const USAGE = `Usage: bun run install:server <user@host> [targets...]
 Targets: ${VALID_REMOTE_TARGETS.join(', ')} (default: ${DEFAULT_REMOTE_TARGETS.join(' ')})`
 
@@ -162,7 +166,7 @@ function main(): number {
   }
 
   console.log(`→ Checking bun on ${dest}`)
-  const hasBun = run('ssh', ['-o', 'ConnectTimeout=10', dest, 'command -v bun'], {
+  const hasBun = run('ssh', ['-o', 'ConnectTimeout=10', dest, BUN_CHECK_CMD], {
     stdio: ['ignore', 'ignore', 'inherit'],
   })
   if (hasBun !== 0) {
