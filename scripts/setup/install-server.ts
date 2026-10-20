@@ -2,16 +2,19 @@
  * Install MCP configs to a remote server over SSH.
  *
  * Steps:
- *   1. Rebuild ./mcp/*.json locally so secrets from .env are fresh.
- *      The .env file itself never leaves the Mac; its values are
- *      already baked into the generated configs.
+ *   1. Rebuild ./mcp/*.json locally for the server profile (servers
+ *      marked profiles: ['local'] in servers.ts are left out) so
+ *      secrets from .env are fresh. The .env file itself never
+ *      leaves the Mac; its values are already baked into the
+ *      generated configs.
  *   2. Send the repo as a tarball piped over SSH to <dest>:~/.dotfiles,
  *      skipping .git, node_modules and .env*. tar is used instead of
  *      rsync because minimal servers ship tar but not rsync.
  *      Re-running overwrites the copy in place.
- *   3. Install bun on the server if missing. The MCP stdio servers
+ *   3. Rebuild the local profile so ./mcp matches this Mac again.
+ *   4. Install bun on the server if missing. The MCP stdio servers
  *      run through bunx and uvx, so bun is needed there anyway.
- *   4. Run scripts/setup/install.ts on the server for the chosen
+ *   5. Run scripts/setup/install.ts on the server for the chosen
  *      targets, with the same merge and backup behavior as locally.
  *      Claude Code servers land at user scope (top-level mcpServers
  *      in ~/.claude.json) so they apply to every project there.
@@ -119,9 +122,13 @@ function main(): number {
   }
   const { dest, targets } = plan
 
-  // Fresh configs with the local .env secrets baked in.
-  console.log('→ Building MCP configs locally')
-  if (run('bun', ['run', 'build'], { cwd: repo }) !== 0) {
+  // Fresh configs for the server profile, with the local .env secrets
+  // baked in. A caller can override the profile through MCP_PROFILE.
+  console.log('→ Building MCP configs locally (server profile)')
+  if (run('bun', ['run', 'build'], {
+    cwd: repo,
+    env: { ...process.env, MCP_PROFILE: process.env.MCP_PROFILE || 'server' },
+  }) !== 0) {
     console.error('Local build failed, nothing was sent.')
     return 1
   }
@@ -144,6 +151,14 @@ function main(): number {
   fs.rmSync(tarball, { force: true })
   if (sent !== 0) {
     return sent
+  }
+
+  // Restore this Mac's profile in ./mcp so a later local install:all
+  // never picks up the server-flavored configs.
+  console.log('→ Rebuilding local MCP configs')
+  if (run('bun', ['run', 'build'], { cwd: repo }) !== 0) {
+    console.error('Local rebuild failed; ./mcp still holds the server profile. Rerun "bun run build".')
+    return 1
   }
 
   console.log(`→ Checking bun on ${dest}`)
