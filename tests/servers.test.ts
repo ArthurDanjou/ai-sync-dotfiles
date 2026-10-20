@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { servers } from '../scripts/servers'
+import { servers, serversForProfile } from '../scripts/servers'
 import { getZedMcpConfig } from '../scripts/mcp/zed'
 import { getClaudeMcpConfig } from '../scripts/mcp/claude'
 import { getClaudeCodeMcpConfig } from '../scripts/mcp/claude-code'
@@ -40,6 +40,23 @@ describe('servers source of truth', () => {
     expect(() => getCodexMcpConfig(servers)).not.toThrow()
     expect(() => getOpenCodeMcpConfig(servers)).not.toThrow()
     expect(() => getLmStudioMcpConfig(servers)).not.toThrow()
+  })
+
+  test('the local profile keeps every server', () => {
+    expect(serversForProfile(servers, 'local')).toHaveLength(servers.length)
+  })
+
+  test('the server profile drops Mac-only servers and keeps the rest', () => {
+    const remote = serversForProfile(servers, 'server')
+    const remoteNames = new Set(remote.map(s => s.name))
+    // Mac binaries and Mac-local services never ship to a server.
+    for (const name of ['zotero', 'oleafly', 'artnotes', 'artmusic']) {
+      expect(remoteNames.has(name), `${name} should be local-only`).toBe(false)
+      expect(servers.find(s => s.name === name)?.profiles).toEqual(['local'])
+    }
+    // Untagged servers ship everywhere.
+    expect(remoteNames.has('github')).toBe(true)
+    expect(remoteNames.has('context7')).toBe(true)
   })
 
   test('generated keys are always a subset of declared server names', () => {

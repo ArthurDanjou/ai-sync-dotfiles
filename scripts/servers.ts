@@ -48,6 +48,13 @@ export interface McpServerDefinition {
   env?: Record<string, string>
   /** Whether the server is enabled by default (only meaningful for OpenCode) */
   enabled?: boolean
+  /**
+   * Install profiles this server belongs to, e.g. ['local'] for a
+   * server backed by a Mac binary or a Mac-local service. A server
+   * without profiles ships in every profile, including the server
+   * profile used by install-server.ts.
+   */
+  profiles?: string[]
 }
 
 /**
@@ -117,6 +124,7 @@ export const servers: McpServerDefinition[] = [
     name: 'zotero',
     type: 'stdio',
     command: `${process.env.HOME ?? '~'}/.local/bin/zotero-mcp`,
+    profiles: ['local'],
     env: {
       ZOTERO_LOCAL: 'true',
       ZOTERO_API_KEY: process.env.ZOTERO_API_KEY ?? '',
@@ -145,6 +153,7 @@ export const servers: McpServerDefinition[] = [
     name: 'artmusic',
     type: 'stdio',
     command: 'uvx',
+    profiles: ['local'],
     args: [
       '--from',
       'git+https://github.com/davidpadbury/music-assistant-mcp',
@@ -164,6 +173,7 @@ export const servers: McpServerDefinition[] = [
     type: 'stdio',
     command: 'uvx',
     args: ['mcp-obsidian'],
+    profiles: ['local'],
     env: {
       OBSIDIAN_API_KEY: process.env.OBSIDIAN_API_KEY ?? '',
       OBSIDIAN_HOST: process.env.OBSIDIAN_HOST ?? '',
@@ -192,6 +202,7 @@ export const servers: McpServerDefinition[] = [
     name: 'oleafly',
     type: 'stdio',
     command: 'bunx',
+    profiles: ['local'],
     args: [
       '-y',
       'mcp-remote@latest',
@@ -259,3 +270,15 @@ export const servers: McpServerDefinition[] = [
     enabled: false,
   },
 ]
+
+/**
+ * Servers that exist for the given install profile. A server without
+ * profiles ships everywhere; one with profiles only ships when the
+ * list contains the requested profile.
+ */
+export function serversForProfile(
+  all: McpServerDefinition[],
+  profile: string,
+): McpServerDefinition[] {
+  return all.filter(s => !s.profiles || s.profiles.includes(profile))
+}
