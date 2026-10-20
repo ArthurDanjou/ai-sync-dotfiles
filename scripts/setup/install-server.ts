@@ -69,12 +69,11 @@ export function tarCreateArgs(tarball: string): string[] {
 export const VALID_REMOTE_TARGETS = ['zed', 'claudeCode', 'opencode', 'codex']
 export const DEFAULT_REMOTE_TARGETS = ['opencode', 'claudeCode', 'codex']
 
-export const BUN_INSTALL_CMD =
-  'if command -v curl >/dev/null 2>&1; then curl -fsSL https://bun.sh/install | bash; else wget -qO- https://bun.sh/install | bash; fi'
+const BUN_INSTALL_CMD = 'curl -fsSL https://bun.sh/install | bash'
 
 // Non-interactive ssh does not source .bashrc, where the bun installer
 // adds ~/.bun/bin, so the PATH must be set for the check itself.
-export const BUN_CHECK_CMD = 'export PATH="$HOME/.bun/bin:$PATH"; command -v bun'
+const BUN_CHECK_CMD = 'export PATH="$HOME/.bun/bin:$PATH"; command -v bun'
 
 const USAGE = `Usage: bun run install:server <user@host> [targets...]
 Targets: ${VALID_REMOTE_TARGETS.join(', ')} (default: ${DEFAULT_REMOTE_TARGETS.join(' ')})`
@@ -91,10 +90,6 @@ export function parseServerArgs(args: string[]): RemoteInstallPlan {
     throw new Error(USAGE)
   }
   const targets = args.slice(1)
-  const macOnly = targets.filter(t => t === 'claude' || t === 'lmstudio')
-  if (macOnly.length > 0) {
-    throw new Error(`Target(s) ${macOnly.join(', ')} are Mac-only and cannot be installed on a server.`)
-  }
   const unknown = targets.filter(t => !VALID_REMOTE_TARGETS.includes(t))
   if (unknown.length > 0) {
     throw new Error(`Unknown target(s): ${unknown.join(', ')}. Valid: ${VALID_REMOTE_TARGETS.join(', ')}`)
@@ -127,11 +122,11 @@ function main(): number {
   const { dest, targets } = plan
 
   // Fresh configs for the server profile, with the local .env secrets
-  // baked in. A caller can override the profile through MCP_PROFILE.
+  // baked in.
   console.log('→ Building MCP configs locally (server profile)')
   if (run('bun', ['run', 'build'], {
     cwd: repo,
-    env: { ...process.env, MCP_PROFILE: process.env.MCP_PROFILE || 'server' },
+    env: { ...process.env, MCP_PROFILE: 'server' },
   }) !== 0) {
     console.error('Local build failed, nothing was sent.')
     return 1

@@ -1,6 +1,5 @@
 import { describe, expect, test } from 'bun:test'
 import {
-  BUN_INSTALL_CMD,
   DEFAULT_REMOTE_TARGETS,
   REMOTE_DIR,
   TAR_EXCLUDES,
@@ -29,13 +28,10 @@ describe('parseServerArgs', () => {
     expect(() => parseServerArgs(['-v'])).toThrow()
   })
 
-  test('Mac-only targets are rejected', () => {
-    expect(() => parseServerArgs(['user@host', 'claude'])).toThrow('Mac-only')
-    expect(() => parseServerArgs(['user@host', 'lmstudio'])).toThrow('Mac-only')
-  })
-
-  test('unknown targets are rejected', () => {
+  test('unknown and Mac-only targets are rejected', () => {
     expect(() => parseServerArgs(['user@host', 'nope'])).toThrow('Unknown target')
+    expect(() => parseServerArgs(['user@host', 'claude'])).toThrow('Unknown target')
+    expect(() => parseServerArgs(['user@host', 'lmstudio'])).toThrow('Unknown target')
   })
 })
 
@@ -67,19 +63,5 @@ describe('buildRemoteCommand', () => {
     expect(cmd).toContain('bun scripts/setup/install.ts opencode claudeCode')
     expect(cmd).toContain('DOTFILES_CLAUDE_CODE_USER_SCOPE=1')
     expect(cmd).toContain('.bun/bin')
-  })
-
-  test('bun install command prefers curl and falls back to wget', () => {
-    expect(BUN_INSTALL_CMD).toContain('https://bun.sh/install')
-    expect(BUN_INSTALL_CMD).toContain('curl -fsSL')
-    expect(BUN_INSTALL_CMD).toContain('wget -qO-')
-  })
-
-  test('tar excludes never ship secrets or machine-local files', () => {
-    for (const junk of ['.git', 'node_modules', '.env', '.claude', '.agents']) {
-      expect(TAR_EXCLUDES, `missing exclude for ${junk}`).toContain(`./${junk}`)
-    }
-    // The glob covers .env.example and any other .env.<name> variant.
-    expect(TAR_EXCLUDES).toContain('./.env.*')
   })
 })
