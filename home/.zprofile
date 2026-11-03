@@ -4,3 +4,5 @@ source ~/.orbstack/shell/init.zsh 2>/dev/null || :
 
 # Hermes Agent — ensure ~/.local/bin is on PATH
 export PATH="$HOME/.local/bin:$PATH"
+
+eval "$(/opt/homebrew/bin/brew shellenv)"

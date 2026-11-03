@@ -1,6 +1,7 @@
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
-export PATH="/Library/TeX/texbin:$PATH"
+typeset -U path PATH
+path=(/Library/TeX/texbin $path)
 export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 export GOPATH=$HOME/go

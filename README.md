@@ -21,7 +21,8 @@ dotfiles/
 │   │   Managed configs (copy-if-missing + MCP merge, never symlinked):
 │   │   zed/settings.json, opencode/opencode.jsonc, claude/settings.json
 │   ├── starship/starship.toml
-│   ├── ghostty/themes/
+│   ├── rex/init.lua        ← Symlinked to ~/.config/rex/init.lua
+│   ├── rex/themes/         ← Ghostty-format palettes, import in Rex Settings > Themes
 │   ├── zed/settings.json   ← Without context_servers (managed by MCP)
 │   ├── zed/keymap.json
 │   ├── zed/tasks.json
@@ -87,6 +88,8 @@ bun run clean --force  # delete them
 ```
 
 Backups older than 3 days are deleted automatically at the start of every `setup` and `install` run (`scripts/setup/backups.ts`). `bun run clean --force` deletes the remaining recent ones on demand.
+
+Rex reads `~/.config/rex/init.lua`, which `bun run setup` symlinks to the repo. Rex does not read theme files from disk, so import `config/rex/themes/artlab-dark` and `artlab-light` once through Settings > Themes > Import Theme, then reload bindings with `rex config reload`.
 
 ### Build (regenerate platform configs)
 

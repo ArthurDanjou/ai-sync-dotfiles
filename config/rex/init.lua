@@ -1,0 +1,2 @@
+-- Rex configuration.
+-- Documentation: https://www.superlogical.com/rex/docs/customize/config
