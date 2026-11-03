@@ -21,7 +21,6 @@ dotfiles/
 │   │   Managed configs (copy-if-missing + MCP merge, never symlinked):
 │   │   zed/settings.json, opencode/opencode.jsonc, claude/settings.json
 │   ├── starship/starship.toml
-│   ├── ghostty/themes/
 │   ├── zed/settings.json   ← Without context_servers (managed by MCP)
 │   ├── zed/keymap.json
 │   ├── zed/tasks.json
