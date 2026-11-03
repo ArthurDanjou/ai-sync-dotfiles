@@ -41,6 +41,7 @@ export function links(): Link[] {
     { src: src('home/.gitignore_global'), dst: dst('.gitignore_global') },
     { src: src('Brewfile'), dst: dst('Brewfile') },
     { src: src('config/starship/starship.toml'), dst: dst('.config/starship.toml') },
+    { src: src('config/rex/init.lua'), dst: dst('.config/rex/init.lua') },
     { src: src('config/zed/keymap.json'), dst: dst('.config/zed/keymap.json') },
     { src: src('config/zed/tasks.json'), dst: dst('.config/zed/tasks.json') },
     { src: src('config/zed/themes/artlab.json'), dst: dst('.config/zed/themes/artlab.json') },
