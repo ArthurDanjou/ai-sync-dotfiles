@@ -96,6 +96,27 @@ describe('claude code installer', () => {
       expect(settings, `settings key ${key} missing`).toHaveProperty(key)
     }
   })
+
+  test('the user-scope flag also merges top-level mcpServers', () => {
+    const home = freshHome()
+    const result = spawnSync('bun', [installScript, 'claudeCode'], {
+      cwd: repoRoot,
+      env: { ...process.env, HOME: home, DOTFILES_CLAUDE_CODE_USER_SCOPE: '1' },
+      encoding: 'utf-8',
+    })
+    expect(result.status).toBe(0)
+    const claudeJson = readJson(path.join(home, '.claude.json'))
+    expect(Object.keys(claudeJson.mcpServers)).toContain('fetch')
+    // The project entry keeps working alongside user scope.
+    expect(Object.keys(claudeJson.projects[repoRoot].mcpServers)).toContain('fetch')
+  })
+
+  test('without the flag the top-level mcpServers stays untouched', () => {
+    const home = freshHome()
+    expect(runInstall(home, 'claudeCode').status).toBe(0)
+    const claudeJson = readJson(path.join(home, '.claude.json'))
+    expect(claudeJson.mcpServers).toBeUndefined()
+  })
 })
 
 describe('full install', () => {

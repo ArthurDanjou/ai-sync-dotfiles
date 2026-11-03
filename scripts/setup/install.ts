@@ -265,6 +265,13 @@ function installClaudeCode(): boolean {
   const existing = current.projects[projectPath].mcpServers
   current.projects[projectPath].mcpServers = mergeServers(existing, mcpConfig.mcpServers ?? {})
 
+  // Remote installs (install-server.ts) run from the dotfiles copy,
+  // not a real project. User-scope servers (top-level mcpServers)
+  // apply to every project on that machine.
+  if (process.env.DOTFILES_CLAUDE_CODE_USER_SCOPE === '1') {
+    current.mcpServers = mergeServers(current.mcpServers, mcpConfig.mcpServers ?? {})
+  }
+
   writeJson(claudeCodePath, current)
   console.log(`  → Restart Claude Code (or reload with Ctrl+R)`)
   return true

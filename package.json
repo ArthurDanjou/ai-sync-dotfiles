@@ -17,6 +17,7 @@
     "install:opencode": "tsx scripts/setup/install.ts opencode",
     "install:codex": "tsx scripts/setup/install.ts codex",
     "install:lmstudio": "tsx scripts/setup/install.ts lmstudio",
+    "install:server": "tsx scripts/setup/install-server.ts",
     "audit": "tsx scripts/setup/audit.ts",
     "typecheck": "tsc --noEmit",
     "test": "bun test",
