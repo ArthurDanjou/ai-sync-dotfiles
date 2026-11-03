@@ -142,6 +142,8 @@ cask "font-jetbrains-mono-nerd-font"
 cask "font-monaspice-nerd-font"
 # Terminal emulator that uses platform-native UI and GPU acceleration
 cask "ghostty"
+# Local voice dictation
+cask "anomalyco/tap/hex", trusted: true
 # Full TeX Live distribution without GUI applications
 cask "mactex-no-gui"
 # Knowledge base that works on top of a local folder of plain text Markdown files
