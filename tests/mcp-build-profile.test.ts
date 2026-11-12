@@ -32,7 +32,7 @@ describe('profile builds (end to end)', () => {
     await main('server', dir)
     for (const entry of SECTIONS) {
       const keys = keysFor(dir, entry)
-      for (const local of ['zotero', 'oleafly', 'artnotes', 'artmusic', 'proxmox', 'filesystem']) {
+      for (const local of ['zotero', 'artnotes', 'artmusic', 'proxmox', 'filesystem']) {
         expect(keys, `${local} leaked into ${entry[0]}`).not.toContain(local)
       }
       expect(keys, `universal servers missing from ${entry[0]}`).toContain('github')

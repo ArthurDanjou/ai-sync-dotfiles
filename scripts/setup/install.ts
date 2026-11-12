@@ -3,7 +3,8 @@
  *
  * Merge strategy: managed servers from ./mcp/*.json are merged
  * per-server into the existing config. Local custom servers are
- * preserved. Nothing outside the MCP keys is touched.
+ * preserved, names in `retiredServers` are removed. Nothing outside
+ * the MCP keys is touched.
  *
  * Safety: a timestamped .bak is written before any change, and
  * symlinked destinations are replaced by regular files so generated
@@ -20,6 +21,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import { retiredServers } from '../servers'
 import { purgeOldBackups, RETENTION_DAYS } from './backups'
 
 const home = process.env.HOME || process.env.USERPROFILE || ''
@@ -176,9 +178,14 @@ export function writeJson(filePath: string, data: any) {
   console.log(`  ✓ ${filePath}`)
 }
 
-/** Merge generated servers into existing ones, preserving local extras. */
-export function mergeServers(current: any, generated: any): any {
-  return { ...(current ?? {}), ...generated }
+/**
+ * Merge generated servers into existing ones, preserving local extras
+ * and dropping names the repo retired (usually after a rename).
+ */
+export function mergeServers(current: any, generated: any, retired: string[] = []): any {
+  const merged = { ...(current ?? {}), ...generated }
+  for (const name of retired) delete merged[name]
+  return merged
 }
 
 // ── Installers (MCP configs) ────────────────────────────────────
@@ -208,7 +215,7 @@ function installZed(): boolean {
   }
 
   // Merge only the context_servers key into the existing settings
-  current.context_servers = mergeServers(current.context_servers, mcpConfig.context_servers ?? {})
+  current.context_servers = mergeServers(current.context_servers, mcpConfig.context_servers ?? {}, retiredServers)
 
   writeJson(zedPath, current)
   console.log('  → Restart Zed (or run "zed: reload settings")')
@@ -232,7 +239,7 @@ function installClaude(): boolean {
   const current = read.data
 
   // Merge mcpServers, preserving local custom servers
-  current.mcpServers = mergeServers(current.mcpServers, mcpConfig.mcpServers ?? {})
+  current.mcpServers = mergeServers(current.mcpServers, mcpConfig.mcpServers ?? {}, retiredServers)
 
   writeJson(claudePath, current)
   console.log('  → Restart Claude Desktop')
@@ -261,15 +268,30 @@ function installClaudeCode(): boolean {
   if (!current.projects) current.projects = {}
   if (!current.projects[projectPath]) current.projects[projectPath] = {}
 
+  const generated = mcpConfig.mcpServers ?? {}
+
+  // Other project entries: refresh the servers they already have and drop
+  // retired names, without adding servers the project did not opt into.
+  // Otherwise a rename lingers in every project not reinstalled from.
+  for (const project of Object.values(current.projects) as any[]) {
+    const servers = project?.mcpServers
+    if (!servers) continue
+    const present: Record<string, unknown> = {}
+    for (const name of Object.keys(servers)) {
+      if (name in generated) present[name] = generated[name]
+    }
+    project.mcpServers = mergeServers(servers, present, retiredServers)
+  }
+
   // Set mcpServers under the current project
   const existing = current.projects[projectPath].mcpServers
-  current.projects[projectPath].mcpServers = mergeServers(existing, mcpConfig.mcpServers ?? {})
+  current.projects[projectPath].mcpServers = mergeServers(existing, generated, retiredServers)
 
   // Remote installs (install-server.ts) run from the dotfiles copy,
   // not a real project. User-scope servers (top-level mcpServers)
   // apply to every project on that machine.
   if (process.env.DOTFILES_CLAUDE_CODE_USER_SCOPE === '1') {
-    current.mcpServers = mergeServers(current.mcpServers, mcpConfig.mcpServers ?? {})
+    current.mcpServers = mergeServers(current.mcpServers, generated, retiredServers)
   }
 
   writeJson(claudeCodePath, current)
@@ -343,7 +365,7 @@ function installOpenCode(): boolean {
   }
 
   // Merge the mcp section, preserving local custom servers
-  current.mcp = mergeServers(current.mcp, mcpConfig.mcp ?? {})
+  current.mcp = mergeServers(current.mcp, mcpConfig.mcp ?? {}, retiredServers)
 
   writeJson(opencodePath, current)
   console.log('  → Restart OpenCode')
@@ -395,8 +417,12 @@ export function codexSectionOwner(header: string, managed: Set<string>): string 
   return managed.has(base) ? base : null
 }
 
-export function mergeCodexToml(current: string, generated: Record<string, any>): string {
-  const managed = new Set(Object.keys(generated))
+export function mergeCodexToml(
+  current: string,
+  generated: Record<string, any>,
+  retired: string[] = [],
+): string {
+  const managed = new Set([...Object.keys(generated), ...retired])
   const kept: string[] = []
   const lines = current.split('\n')
   let i = 0
@@ -427,7 +453,7 @@ export function mergeCodexToml(current: string, generated: Record<string, any>):
     i += 1
   }
   let text = kept.join('\n').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trimEnd()
-  const blocks = [...managed].map(name => renderCodexBlock(name, generated[name]))
+  const blocks = Object.keys(generated).map(name => renderCodexBlock(name, generated[name]))
   if (text.length > 0) text += '\n\n'
   text += `${CODEX_MANAGED_MARKER}\n\n${blocks.join('\n\n')}\n`
   return text
@@ -446,7 +472,7 @@ function installCodex(): boolean {
   } catch {
     // Fresh machine, the managed block becomes the whole file.
   }
-  const wanted = mergeCodexToml(current, mcpRead.data.mcp_servers ?? {})
+  const wanted = mergeCodexToml(current, mcpRead.data.mcp_servers ?? {}, retiredServers)
   if (current === wanted) {
     console.log(`  = ${codexPath} (unchanged)`)
     return true
@@ -484,7 +510,7 @@ function installLmStudio(): boolean {
   }
   const current = read.data
 
-  current.mcpServers = mergeServers(current.mcpServers, mcpConfig.mcpServers ?? {})
+  current.mcpServers = mergeServers(current.mcpServers, mcpConfig.mcpServers ?? {}, retiredServers)
 
   writeJson(lmstudioPath, current)
   console.log('  → Restart LM Studio')

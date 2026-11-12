@@ -117,6 +117,30 @@ describe('claude code installer', () => {
     const claudeJson = readJson(path.join(home, '.claude.json'))
     expect(claudeJson.mcpServers).toBeUndefined()
   })
+
+  test('other project entries drop retired servers and refresh managed ones', () => {
+    const home = freshHome()
+    const claudeJsonPath = path.join(home, '.claude.json')
+    fs.writeFileSync(
+      claudeJsonPath,
+      JSON.stringify({
+        projects: {
+          '/tmp/other-project': {
+            mcpServers: {
+              'arr-mcp': { url: 'https://stale' },
+              fetch: { command: 'old' },
+              mine: { command: 'keep' },
+            },
+          },
+        },
+      }),
+    )
+    expect(runInstall(home, 'claudeCode').status).toBe(0)
+    const project = readJson(claudeJsonPath).projects['/tmp/other-project']
+    expect(project.mcpServers['arr-mcp']).toBeUndefined()
+    expect(project.mcpServers.fetch.command).not.toBe('old')
+    expect(project.mcpServers.mine).toEqual({ command: 'keep' })
+  })
 })
 
 describe('full install', () => {

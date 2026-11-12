@@ -45,6 +45,13 @@ describe('mergeServers', () => {
       over: 'new',
     })
   })
+
+  test('retired names are deleted, other extras survive', () => {
+    expect(mergeServers({ keep: 1, 'old-name': 2 }, { current: 3 }, ['old-name'])).toEqual({
+      keep: 1,
+      current: 3,
+    })
+  })
 })
 
 describe('codex toml helpers', () => {
@@ -83,6 +90,23 @@ describe('codex toml helpers', () => {
     expect(merged).toContain('command = "new"')
     expect(merged).not.toContain('"old"')
     expect(merged).toContain(CODEX_MANAGED_MARKER)
+  })
+
+  test('mergeCodexToml drops retired sections without rendering them', () => {
+    const generated = { a: { command: 'new' } }
+    const current = [
+      'top = true',
+      '',
+      '[mcp_servers.old-name]',
+      'command = "stale"',
+      '',
+      '[mcp_servers.old-name.env]',
+      'K = "v"',
+    ].join('\n')
+    const merged = mergeCodexToml(current, generated, ['old-name'])
+    expect(merged).not.toContain('old-name')
+    expect(merged).not.toContain('stale')
+    expect(merged).toContain('[mcp_servers.a]')
   })
 
   test('mergeCodexToml is idempotent', () => {

@@ -159,8 +159,6 @@ export const servers: McpServerDefinition[] = [
     args: [
       '--from',
       'git+https://github.com/davidpadbury/music-assistant-mcp',
-      '--with',
-      'mcp[cli]<2',
       'music-assistant-mcp',
     ],
     env: {
@@ -197,39 +195,6 @@ export const servers: McpServerDefinition[] = [
       MEALIE_BASE_URL: process.env.MEALIE_BASE_URL ?? '',
       MEALIE_API_KEY: process.env.MEALIE_API_KEY ?? '',
     },
-    enabled: true,
-  },
-
-  {
-    name: 'oleafly',
-    type: 'stdio',
-    command: 'bunx',
-    profiles: ['local'],
-    args: [
-      '-y',
-      'mcp-remote@latest',
-      process.env.OLEAFLY_MCP_URL ?? 'http://127.0.0.1:5323/mcp',
-      '--header',
-      `Authorization: Bearer ${process.env.OLEAFLY_MCP_TOKEN ?? ''}`,
-      '--transport',
-      'http-only',
-    ],
-    enabled: true,
-  },
-
-  {
-    name: 'homelable',
-    type: 'stdio',
-    command: 'bunx',
-    args: [
-      '-y',
-      'mcp-remote@latest',
-      process.env.HOMELABLE_MCP_URL ?? 'https://homelable.arthurdanjou.fr/mcp/',
-      '--header',
-      `X-API-Key: ${process.env.HOMELABLE_MCP_TOKEN ?? ''}`,
-      '--transport',
-      'http-only',
-    ],
     enabled: true,
   },
 
@@ -271,6 +236,21 @@ export const servers: McpServerDefinition[] = [
     url: 'https://docs.mcp.cloudflare.com/mcp',
     enabled: false,
   },
+]
+
+/**
+ * Names this repository used to manage and no longer defines, because
+ * they were renamed or dropped. Install deletes them from client configs
+ * so a rename does not leave two entries for the same server behind.
+ * Add a name here when you remove or rename an entry from `servers`.
+ */
+export const retiredServers: string[] = [
+  'karakeep', // dropped, replaced by artnotes
+  'obsidian', // dropped, replaced by artnotes
+  'music-assistant', // renamed artmusic
+  'arr-mcp', // renamed artmedia
+  'oleafly', // dropped
+  'homelable', // dropped
 ]
 
 /**
