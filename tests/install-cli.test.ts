@@ -153,7 +153,6 @@ describe('full install', () => {
       path.join(home, '.claude.json'),
       path.join(home, '.config', 'opencode', 'opencode.jsonc'),
       path.join(home, '.codex', 'config.toml'),
-      path.join(home, '.lmstudio', 'mcp.json'),
     ]
     for (const file of expected) {
       expect(fs.existsSync(file), `missing ${file}`).toBe(true)

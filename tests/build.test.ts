@@ -9,7 +9,6 @@ const expectedKeys: Record<string, string> = {
   'claude-code.json': 'mcpServers',
   'opencode.json': 'mcp',
   'codex.json': 'mcp_servers',
-  'lmstudio.json': 'mcpServers',
 }
 
 describe('bun run build', () => {

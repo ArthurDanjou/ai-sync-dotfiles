@@ -50,7 +50,6 @@ export function getTargets() {
     claudeCodeDir: path.join(home, '.claude'),
     opencode: path.join(home, '.config', 'opencode', 'opencode.jsonc'),
     opencodeDir: path.join(home, '.config', 'opencode'),
-    lmstudio: path.join(home, '.lmstudio', 'mcp.json'),
   }
 }
 
@@ -495,28 +494,6 @@ function installCodex(): boolean {
   return true
 }
 
-function installLmStudio(): boolean {
-  const { lmstudio: lmstudioPath } = getTargets()
-  const mcpRead = readJsonSafe(fromRepo('./mcp/lmstudio.json'))
-  if (mcpRead.missing || mcpRead.corrupt) {
-    console.error('  ✗ ./mcp/lmstudio.json is missing or invalid. Run "bun run build" first.')
-    return false
-  }
-  const mcpConfig = mcpRead.data
-  const read = readJsonSafe(lmstudioPath)
-  if (read.corrupt) {
-    console.error(`  ✗ ${lmstudioPath} is not valid JSON. Fix it manually, nothing was written.`)
-    return false
-  }
-  const current = read.data
-
-  current.mcpServers = mergeServers(current.mcpServers, mcpConfig.mcpServers ?? {}, retiredServers)
-
-  writeJson(lmstudioPath, current)
-  console.log('  → Restart LM Studio')
-  return true
-}
-
 // ── Installers (platform instructions) ───────────────────────────
 
 // Copy a text file only when content differs. Identical destinations
@@ -564,7 +541,7 @@ function installOpenCodeInstructions() {
 
 // ── Main ────────────────────────────────────────────────────────
 
-const VALID_TARGETS = ['zed', 'claude', 'claudeCode', 'opencode', 'lmstudio', 'codex']
+const VALID_TARGETS = ['zed', 'claude', 'claudeCode', 'opencode', 'codex']
 
 function main() {
   const args = process.argv.slice(2)
@@ -608,12 +585,6 @@ function main() {
   if (targets.has('opencode')) {
     console.log('OpenCode:')
     ok = installOpenCode() && ok
-    console.log()
-  }
-
-  if (targets.has('lmstudio')) {
-    console.log('LM Studio:')
-    ok = installLmStudio() && ok
     console.log()
   }
 

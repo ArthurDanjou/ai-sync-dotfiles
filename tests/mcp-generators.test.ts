@@ -4,7 +4,6 @@ import { getClaudeMcpConfig } from '../scripts/mcp/claude'
 import { getClaudeCodeMcpConfig } from '../scripts/mcp/claude-code'
 import { getCodexMcpConfig } from '../scripts/mcp/codex'
 import { getOpenCodeMcpConfig } from '../scripts/mcp/opencode'
-import { getLmStudioMcpConfig } from '../scripts/mcp/lmstudio'
 import type { McpServerDefinition } from '../scripts/servers'
 
 const stdioFull: McpServerDefinition = {
@@ -115,14 +114,6 @@ describe('opencode (local command array, enabled flag)', () => {
   })
 })
 
-describe('lmstudio (stdio + remote url)', () => {
-  test('mirrors the claude desktop shape', () => {
-    const config = getLmStudioMcpConfig(mixed)
-    expect(Object.keys(config.mcpServers).sort()).toEqual(['full', 'minimal', 'web'])
-    expect(config.mcpServers.web).toEqual({ url: 'https://example.com/mcp' })
-  })
-})
-
 describe('all generators', () => {
   test('outputs survive a JSON round trip', () => {
     const outputs = [
@@ -131,7 +122,6 @@ describe('all generators', () => {
       getClaudeCodeMcpConfig(mixed),
       getCodexMcpConfig(mixed),
       getOpenCodeMcpConfig(mixed),
-      getLmStudioMcpConfig(mixed),
     ]
     for (const output of outputs) {
       expect(JSON.parse(JSON.stringify(output))).toEqual(output)

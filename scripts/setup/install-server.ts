@@ -24,7 +24,7 @@
  *   bun run install:server my-alias          # any host from ~/.ssh/config
  *   bun run install:server user@host zed     # explicit target list
  *
- * Claude Desktop and LM Studio are Mac-only and refused here.
+ * Claude Desktop is Mac-only and refused here.
  */
 
 import type { SpawnSyncOptions } from 'node:child_process'
@@ -65,7 +65,7 @@ export function tarCreateArgs(tarball: string): string[] {
 }
 
 // Targets that make sense on a headless Linux server. Claude Desktop
-// and LM Studio are Mac-only; zed is allowed for a desktop Linux box.
+// is Mac-only; zed is allowed for a desktop Linux box.
 export const VALID_REMOTE_TARGETS = ['zed', 'claudeCode', 'opencode', 'codex']
 export const DEFAULT_REMOTE_TARGETS = ['opencode', 'claudeCode', 'codex']
 

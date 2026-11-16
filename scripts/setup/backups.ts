@@ -29,7 +29,6 @@ const scanRoots = [
   path.join(home, '.config'),
   path.join(home, '.claude'),
   path.join(home, '.codex'),
-  path.join(home, '.lmstudio'),
   path.join(home, '.agents'),
   path.join(home, 'Library', 'Application Support', 'Claude Desktop'),
   path.join(repo, '.git', 'hooks'),
