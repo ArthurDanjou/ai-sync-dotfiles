@@ -17,7 +17,6 @@ const SECTIONS: Array<[file: string, section: string]> = [
   ['claude.json', 'mcpServers'],
   ['claude-code.json', 'mcpServers'],
   ['opencode.json', 'mcp'],
-  ['lmstudio.json', 'mcpServers'],
   ['codex.json', 'mcp_servers'],
 ]
 

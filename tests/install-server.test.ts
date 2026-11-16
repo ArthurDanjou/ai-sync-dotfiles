@@ -31,7 +31,6 @@ describe('parseServerArgs', () => {
   test('unknown and Mac-only targets are rejected', () => {
     expect(() => parseServerArgs(['user@host', 'nope'])).toThrow('Unknown target')
     expect(() => parseServerArgs(['user@host', 'claude'])).toThrow('Unknown target')
-    expect(() => parseServerArgs(['user@host', 'lmstudio'])).toThrow('Unknown target')
   })
 })
 

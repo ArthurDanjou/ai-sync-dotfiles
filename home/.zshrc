@@ -74,14 +74,6 @@ fi
 export PATH="$HOME/.cargo/bin:$PATH"
 command -v ty >/dev/null && eval "$(ty generate-shell-completion zsh)"
 
-# Added by LM Studio CLI (lms)
-export PATH="$PATH:$HOME/.lmstudio/bin"
-# End of LM Studio CLI section
-
 # bun completions
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
-
-# Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/arthurdanjou/.lmstudio/bin"
-# End of LM Studio CLI section
 

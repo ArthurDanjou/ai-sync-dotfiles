@@ -44,7 +44,6 @@ export const MUST_BE_IGNORED = [
   'mcp/claude-code.json',
   'mcp/opencode.json',
   'mcp/codex.json',
-  'mcp/lmstudio.json',
 ]
 
 function trackedFiles(): string[] {

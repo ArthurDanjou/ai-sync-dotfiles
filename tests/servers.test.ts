@@ -5,7 +5,6 @@ import { getClaudeMcpConfig } from '../scripts/mcp/claude'
 import { getClaudeCodeMcpConfig } from '../scripts/mcp/claude-code'
 import { getCodexMcpConfig } from '../scripts/mcp/codex'
 import { getOpenCodeMcpConfig } from '../scripts/mcp/opencode'
-import { getLmStudioMcpConfig } from '../scripts/mcp/lmstudio'
 
 describe('servers source of truth', () => {
   test('names are unique and non-empty', () => {
@@ -39,7 +38,6 @@ describe('servers source of truth', () => {
     expect(() => getClaudeCodeMcpConfig(servers)).not.toThrow()
     expect(() => getCodexMcpConfig(servers)).not.toThrow()
     expect(() => getOpenCodeMcpConfig(servers)).not.toThrow()
-    expect(() => getLmStudioMcpConfig(servers)).not.toThrow()
   })
 
   test('the local profile keeps every server', () => {
@@ -69,7 +67,6 @@ describe('servers source of truth', () => {
       Object.keys(getClaudeCodeMcpConfig(servers).mcpServers),
       Object.keys(getCodexMcpConfig(servers).mcp_servers),
       Object.keys(getOpenCodeMcpConfig(servers).mcp),
-      Object.keys(getLmStudioMcpConfig(servers).mcpServers),
     ]
     for (const keys of outputs) {
       expect(keys.length).toBeGreaterThan(0)

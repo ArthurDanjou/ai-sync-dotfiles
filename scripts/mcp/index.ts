@@ -17,7 +17,6 @@ import { getClaudeMcpConfig } from './claude'
 import { getClaudeCodeMcpConfig } from './claude-code'
 import { getCodexMcpConfig } from './codex'
 import { getOpenCodeMcpConfig } from './opencode'
-import { getLmStudioMcpConfig } from './lmstudio'
 
 export async function main(
   profileName = process.env.MCP_PROFILE || 'local',
@@ -53,12 +52,6 @@ export async function main(
       JSON.stringify(getOpenCodeMcpConfig(active), null, 2),
     ),
 
-    // ── LM Studio ──
-    fs.writeFile(
-      path.join(outDir, 'lmstudio.json'),
-      JSON.stringify(getLmStudioMcpConfig(active), null, 2),
-    ),
-
     // ── Codex CLI ──
     fs.writeFile(
       path.join(outDir, 'codex.json'),
@@ -71,7 +64,7 @@ export async function main(
   const stdioCount = active.filter(s => s.type === 'stdio').length
   const remoteCount = active.filter(s => s.type === 'remote').length
   const excluded = servers.length - active.length
-  console.log(`✓ Generated MCP configs for Zed, Claude, Claude Code, OpenCode, Codex, and LM Studio`)
+  console.log(`✓ Generated MCP configs for Zed, Claude, Claude Code, OpenCode, and Codex`)
   console.log(`  profile ${profileName}: ${stdioCount} stdio servers, ${remoteCount} remote servers${excluded > 0 ? `, ${excluded} excluded` : ''}`)
 }
 

@@ -1,6 +1,6 @@
 # Dotfiles
 
-Mac dotfiles with centralised MCP server configuration, exported to the correct format for **Zed**, **OpenCode**, **Claude Desktop**, **Claude Code CLI**, **Codex CLI**, and **LM Studio**.
+Mac dotfiles with centralised MCP server configuration, exported to the correct format for **Zed**, **OpenCode**, **Claude Desktop**, **Claude Code CLI**, and **Codex CLI**.
 
 Inspired by the pattern from [theme-artlab](https://github.com/ArthurDanjou/theme-artlab): one source of truth, multiple platform outputs.
 
@@ -45,7 +45,6 @@ dotfiles/
 │   │   ├── claude-code.ts  Formats servers for Claude Code CLI
 │   │   ├── codex.ts        Formats servers for Codex CLI ([mcp_servers.*] tables)
 │   │   ├── opencode.ts     Formats servers for OpenCode (stdio + remote)
-│   │   ├── lmstudio.ts     Formats servers for LM Studio
 │   │   ├── helper.ts       Shared utilities
 │   │   └── index.ts        Build orchestrator
 │   └── setup/              ← Machine setup (install, no manual edits needed)
@@ -108,7 +107,6 @@ bun run install:claude       # installs only Claude Desktop
 bun run install:claude-code  # installs only Claude Code CLI
 bun run install:opencode     # installs only OpenCode
 bun run install:codex        # installs only Codex CLI
-bun run install:lmstudio     # installs only LM Studio
 ```
 
 Managed servers are merged per-server into the existing config: servers from the repo replace the whole entry (a local tweak inside a managed entry is overwritten), extra local servers are preserved, and names listed in `retiredServers` (`scripts/servers.ts`) are deleted, so a renamed or dropped server does not linger. A server removed from `servers` without being listed in `retiredServers` stays in place until deleted by hand. A timestamped `.bak` is written before any change. Symlinked destinations are replaced by regular files so generated secrets never leak back into the repo. Files that fail JSONC parsing are never overwritten. Every install also deploys `scripts/instructions.md` to `~/.claude/CLAUDE.md` and `~/.config/opencode/AGENTS.md`, and merges `config/claude/settings.json` into `~/.claude/settings.json`. Note: `install:claude-code` writes under the `projects` entry of your current directory in `~/.claude.json`, so run it from the repo (or any intended project).
@@ -127,7 +125,7 @@ Notes for opencode v2: the global config is `~/.config/opencode/opencode.jsonc` 
 
 ## Adding a command
 
-Commands live in `scripts/commands/` as the single source of truth. `bun run setup` symlinks every file to `~/.config/opencode/commands`, `~/.claude/commands` and `~/.codex/prompts` so OpenCode, Claude Code and Codex see the same set everywhere. Only these three platforms support custom commands: Zed, Claude Desktop and LM Studio have no such mechanism.
+Commands live in `scripts/commands/` as the single source of truth. `bun run setup` symlinks every file to `~/.config/opencode/commands`, `~/.claude/commands` and `~/.codex/prompts` so OpenCode, Claude Code and Codex see the same set everywhere. Only these three platforms support custom commands: Zed and Claude Desktop have no such mechanism.
 
 The shared format works everywhere: YAML frontmatter with a `description` field and `$ARGUMENTS` for the argument placeholder. Codex exposes each prompt as `/prompts:<name>`. Command files that need a specific platform must stay out of the shared directory.
 
@@ -160,13 +158,13 @@ If a variable is unset, the corresponding `env` block is omitted from the genera
 
 ## Platform format differences
 
-| Feature          | Zed                        | Claude Desktop             | Claude Code CLI           | OpenCode                              | Codex CLI                             | LM Studio                             |
-|------------------|----------------------------|----------------------------|---------------------------|---------------------------------------|---------------------------------------|---------------------------------------|
-| Config file      | `~/.config/zed/settings.json` | `~/Library/Application Support/Claude Desktop/claude_desktop_config.json` | `~/.claude.json`        | `~/.config/opencode/opencode.jsonc`    | `~/.codex/config.toml`                | `~/.lmstudio/mcp.json`                |
-| Config key       | `context_servers`          | `mcpServers`               | `projects[…]mcpServers`   | `mcp`                                 | `mcp_servers`                         | `mcpServers`                          |
-| Remote servers   | ❌ Not supported           | ✅ Supported via `url`     | ✅ Supported (`type: http`) | ✅ Supported (`type: remote`)           | ✅ Supported via `url`                | ✅ Supported via `url`                 |
-| Command format   | `{ command, args }`        | `{ command, args }`        | `{ command, args }`       | `{ type: local, command: string[] }`  | `[mcp_servers.name]` TOML table       | `{ command, args }`                   |
-| Env vars         | `env`                      | `env`                      | `env`                     | `environment`                         | `[mcp_servers.name.env]`              | `env`                                 |
+| Feature          | Zed                        | Claude Desktop             | Claude Code CLI           | OpenCode                              | Codex CLI                             |
+|------------------|----------------------------|----------------------------|---------------------------|---------------------------------------|---------------------------------------|
+| Config file      | `~/.config/zed/settings.json` | `~/Library/Application Support/Claude Desktop/claude_desktop_config.json` | `~/.claude.json`        | `~/.config/opencode/opencode.jsonc`    | `~/.codex/config.toml`                |
+| Config key       | `context_servers`          | `mcpServers`               | `projects[…]mcpServers`   | `mcp`                                 | `mcp_servers`                         |
+| Remote servers   | ❌ Not supported           | ✅ Supported via `url`     | ✅ Supported (`type: http`) | ✅ Supported (`type: remote`)           | ✅ Supported via `url`                |
+| Command format   | `{ command, args }`        | `{ command, args }`        | `{ command, args }`       | `{ type: local, command: string[] }`  | `[mcp_servers.name]` TOML table       |
+| Env vars         | `env`                      | `env`                      | `env`                     | `environment`                         | `[mcp_servers.name.env]`              |
 | Enable/disable   | —                          | —                          | —                         | `enabled`                             | —                                     | —                                     |
 
 ## License

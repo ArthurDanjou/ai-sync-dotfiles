@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "private": true,
   "packageManager": "bun@1.3.14",
-  "description": "Mac dotfiles with MCP server exporter for Zed, OpenCode, Claude Desktop, Claude Code, Codex and LM Studio",
+  "description": "Mac dotfiles with MCP server exporter for Zed, OpenCode, Claude Desktop, Claude Code and Codex",
   "license": "MIT",
   "scripts": {
     "build": "tsx scripts/mcp/index.ts",
@@ -16,7 +16,6 @@
     "install:claude-code": "tsx scripts/setup/install.ts claudeCode",
     "install:opencode": "tsx scripts/setup/install.ts opencode",
     "install:codex": "tsx scripts/setup/install.ts codex",
-    "install:lmstudio": "tsx scripts/setup/install.ts lmstudio",
     "install:server": "tsx scripts/setup/install-server.ts",
     "audit": "tsx scripts/setup/audit.ts",
     "typecheck": "tsc --noEmit",
